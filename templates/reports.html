@@ -1,0 +1,20 @@
+<html>
+<head>
+    <title>Reports | {{ directory }}</title>
+
+    <link href="/static/css/normalize.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+<h1>Reports in <code>{{ directory }}</code></h1>
+
+<ul>
+{% for report in reports %}
+    <li><a href="/{{ directory }}/{{ report }}">{{ report }}</a></li>
+{% endfor %}
+</ul>
+
+</body>
+</html>

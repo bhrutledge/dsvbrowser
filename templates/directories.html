@@ -1,0 +1,20 @@
+<html>
+<head>
+    <title>Directories</title>
+
+    <link href="/static/css/normalize.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+<h1>Report Directories</h1>
+
+<ul>
+{% for directory in directories %}
+    <li><a href="/{{ directory }}">{{ directory }}</a></li>
+{% endfor %}
+</ul>
+
+</body>
+</html>

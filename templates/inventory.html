@@ -1,0 +1,46 @@
+<html>
+<head>
+    <title>{{ title|e }}</title>
+
+    <link href="/static/css/normalize.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/theme.default.css" rel="stylesheet">
+
+    <script src="/static/js/jquery-1.10.2.min.js"></script>
+    <script src="/static/js/jquery.tablesorter.min.js"></script>
+    <script src="/static/js/jquery.tablesorter.widgets.min.js"></script>
+    
+    <script>
+    $(function(){
+        // TODO: Add checkbox
+        $('table').tablesorter({
+            widgets : ['zebra', 'stickyHeaders', 'filter'],
+            sortList : [[0,0]],
+            widthFixed : true
+        });
+    });
+    </script>
+</head>
+<body>
+    <h1>{{ title|e }}</h1>
+
+    <table>
+        <thead>
+            <tr>
+            {% for item in head %}
+                <td>{{ item|e }}</td>
+            {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in body %}
+            <tr>
+            {% for item in row %}    
+                <td>{{ item|e }}</td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
