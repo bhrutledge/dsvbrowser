@@ -42,15 +42,17 @@ def list_directories():
 def list_reports(directory):
     reports = glob.glob(os.path.join(REPORT_DIR, directory, '*' + REPORT_EXT))
     reports = [ os.path.splitext(os.path.basename(f))[0] for f in reports]
-    return render_template('reports.html', directory=directory,
-                           reports=reports)
+    return render_template('reports.html',
+                           directory=directory, reports=reports)
 
 
 @app.route('/<directory>/<report>')
 def show_report(directory, report):
+    # TODO: Test file
     report_path = os.path.join(REPORT_DIR, directory, report + REPORT_EXT)
     title, head_row, body_rows = parse_input(report_path)
     return render_template(directory + '.html', 
+                           directory=directory, report=report,
                            title=title, head=head_row, body=body_rows)
 
 

@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Reports | {{ directory }}</title>
+    <title>{{ directory }}</title>
 
     <link href="/static/css/normalize.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
@@ -8,13 +8,13 @@
 
 <body>
 
-<h1>Reports in <code>{{ directory }}</code></h1>
+    <p><a href="/">home</a> &gt; {{ directory }} &gt;</p>
 
-<ul>
-{% for report in reports %}
-    <li><a href="/{{ directory }}/{{ report }}">{{ report }}</a></li>
-{% endfor %}
-</ul>
+    <ul>
+    {% for report in reports %}
+        <li><a href="/{{ directory }}/{{ report }}">{{ report }}</a></li>
+    {% endfor %}
+    </ul>
 
 </body>
 </html>
