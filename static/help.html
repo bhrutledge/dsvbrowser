@@ -1,0 +1,73 @@
+<html>
+<head>
+    <title>Help</title>
+
+    <link href="/static/css/normalize.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/theme.default.css" rel="stylesheet">
+</head>
+<body>
+    <h1>Help</h1>
+
+    <h2>Column Filters</h2>
+    <table class="tablesorter-default">
+        <thead><tr><th>Type</th><th>Description</th><th>Example</th></tr></thead>
+        <tbody>
+            <tr>
+                <td>text</td>
+                <td>Any text entered in the filter will match text found within the column</td>
+                <td><code>abc</code> (finds &quot;abc&quot;, &quot;abcd&quot;, &quot;abcde&quot;, etc)</td>
+            </tr>
+            <tr>
+                <td><code>!</code></td>
+                <td>Not operator. Filter the column with content that does not match the query.</td>
+                <td><code>!fe</code> (hide rows with &quot;female&quot; in that column, but shows rows with &quot;male&quot;)</td>
+            </tr>
+            <tr>
+                <td><code>&lt; &lt;= &gt;= &gt;</code></td>
+                <td>Find alphabetical or numerical values less than or greater than or equal to the filtered query.</td>
+                <td><code>&gt;= 10</code> (find values greater than or equal to 10)</td>
+            </tr>
+
+            <tr>
+                <td><code>-</code>&nbsp; or &nbsp;<code>to</code></td>
+                <td>Find a range of values. Make sure there is a space before and after the dash (or the word &quot;to&quot;)</small>.</td>
+                <td><code>10 - 30</code> or <code>10 to 30</code> (match values between 10 and 30)</td>
+            </tr>
+            <tr>
+                <td><code>&quot;</code></td>
+                <td>To exactly match the search query, add a quote, apostrophe or equal sign to the beginning and/or end of the query</td>
+                <td><code>abc&quot;</code> or <code>abc=</code> (exactly match &quot;abc&quot;)</td>
+            </tr>
+            <tr>
+                <td><code>?</code></td>
+                <td>Wildcard for a single, non-space character.</td>
+                <td><code>J?n</code> (finds &quot;Jan&quot; and &quot;Jun&quot;, but not &quot;Joan&quot;)</td>
+            </tr>
+            <tr>
+                <td><code>*</code></td>
+                <td>Wildcard for zero or more non-space characters.</td>
+                <td><code>B*k</code> (matches &quot;Black&quot; and &quot;Book&quot;)</td>
+            </tr>
+            <tr>
+                <td><code>/\d/</code></td>
+                <td>Add any regex to the query to use in the query</td>
+                <td><code>/b[aeiou]g/i</code> (finds &quot;bag&quot;, &quot;beg&quot;, &quot;BIG&quot;, &quot;Bug&quot;, etc)</td>
+            </tr>
+            <!--
+            <tr>
+                <td><code>&amp;&amp;</code>&nbsp; or &nbsp;<code>AND</code></td>
+                <td>Logical &quot;and&quot;. Filter the column for content that matches text from both sides of the operator.</td>
+                <td><code>box &amp;&amp; bat</code> (matches a column cell that contains both &quot;box&quot; and &quot;bat&quot;)</td>
+            </tr>
+            <tr>
+                <td><code>|</code>&nbsp; or &nbsp;<code>OR</code></td>
+                <td>Logical &quot;or&quot;. Filter the column for content that matches text from either side of the operator.</td>
+                <td><code>box|bat</code> (matches a column cell with either &quot;box&quot; or &quot;bat&quot;)</td>
+            </tr>
+            -->
+        </tbody>
+    </table>
+    </div>
+</body>
+</html>

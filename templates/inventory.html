@@ -15,7 +15,7 @@
     
     <script>
     $(function(){
-        $('table').tablesorter({
+        $('#report').tablesorter({
             widgets : ['zebra', 'stickyHeaders', 'filter'],
             headers: {
                 0: { sorter: 'checkbox' }
@@ -38,7 +38,9 @@
 
     <h1>{{ title|e }}</h1>
 
-    <table>
+    <p><a href="/static/help.html">Help</a></p>
+
+    <table id="report">
         <thead>
             <tr>
                 <th data-placeholder="All">Show</th>
