@@ -5,37 +5,52 @@
     <link href="/static/css/normalize.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
     <link href="/static/css/theme.default.css" rel="stylesheet">
+    <link href="/static/css/filter.formatter.css" rel="stylesheet">
 
     <script src="/static/js/jquery-1.10.2.min.js"></script>
     <script src="/static/js/jquery.tablesorter.min.js"></script>
     <script src="/static/js/jquery.tablesorter.widgets.min.js"></script>
+    <script src="/static/js/jquery.tablesorter.widgets-filter-formatter.min.js"></script>
+    <script src="/static/js/parsers/parser-input-select.js"></script>
     
     <script>
     $(function(){
-        // TODO: Add checkbox
         $('table').tablesorter({
             widgets : ['zebra', 'stickyHeaders', 'filter'],
-            sortList : [[0,0]],
-            widthFixed : true
+            headers: {
+                0: { sorter: 'checkbox' }
+            },
+            widgetOptions: {
+                filter_functions: {
+                    0: { 
+                        "Checked" : function(e, n, f, i) { return n === "checked"; }
+                    },
+                },
+                sortList : [[1,0]],
+                widthFixed : true
+            }
         });
     });
     </script>
 </head>
 <body>
     <p><a href="/">home</a> &gt; <a href="/{{ directory }}">{{ directory }}</a> &gt; {{ report }}</p>
+
     <h1>{{ title|e }}</h1>
 
     <table>
         <thead>
             <tr>
+                <th data-placeholder="All">Show</th>
             {% for item in head %}
-                <td>{{ item|e }}</td>
+                <th>{{ item|e }}</th>
             {% endfor %}
             </tr>
         </thead>
         <tbody>
         {% for row in body %}
             <tr>
+                <td><input type="checkbox" /></td>
             {% for item in row %}    
                 <td>{{ item|e }}</td>
             {% endfor %}
