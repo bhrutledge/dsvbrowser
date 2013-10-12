@@ -23,7 +23,8 @@
             widgetOptions: {
                 filter_functions: {
                     0: { 
-                        "Checked" : function(e, n, f, i) { return n === "checked"; }
+                        "Checked" : function(e, n, f, i) { return n === "checked"; },
+                        "Unchecked" : function(e, n, f, i) { return n === "unchecked"; }
                     },
                 },
                 sortList : [[1,0]],
