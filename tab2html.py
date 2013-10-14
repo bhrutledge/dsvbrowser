@@ -13,17 +13,17 @@ REPORT_EXT = '.txt'
 app = Flask(__name__)
 
 
-def get_report_name(rpt_fname):
-    return os.path.splitext(os.path.basename(rpt_fname))[0]
+def get_report_name(report_fname):
+    return os.path.splitext(os.path.basename(report_fname))[0]
 
 
-def get_report_path(rpt_dir, rpt_fname):
-    return os.path.join(REPORT_DIR, rpt_dir, secure_filename(rpt_fname))
+def get_report_path(report_dir, report_fname):
+    return os.path.join(REPORT_DIR, report_dir, secure_filename(report_fname))
     
 
-def list_report_dir(rpt_dir):
-    rpt_path = os.path.join(REPORT_DIR, rpt_dir, '*' + REPORT_EXT)
-    return [ get_report_name(f) for f in glob.glob(rpt_path)]
+def list_report_dir(report_dir):
+    report_path = os.path.join(REPORT_DIR, report_dir, '*' + REPORT_EXT)
+    return [ get_report_name(f) for f in glob.glob(report_path) ]
 
 
 def nonblank_lines(line_iter):
@@ -47,45 +47,45 @@ def parse_input(in_path):
 @app.route('/')
 def list_directories():
     try:
-        rpt_dirs = [ d for d in os.listdir(REPORT_DIR) 
+        report_dirs = [ d for d in os.listdir(REPORT_DIR) 
                     if os.path.isdir(os.path.join(REPORT_DIR, d)) ]
     except OSError:
         abort(404)
 
-    return render_template('directories.html', rpt_dirs=rpt_dirs)
+    return render_template('directories.html', report_dirs=report_dirs)
 
 
-@app.route('/<rpt_dir>', methods=['GET', 'POST'])
-def list_reports(rpt_dir):
-    if not os.path.isdir(os.path.join(REPORT_DIR, rpt_dir)):
+@app.route('/<report_dir>', methods=['GET', 'POST'])
+def list_reports(report_dir):
+    if not os.path.isdir(os.path.join(REPORT_DIR, report_dir)):
         abort(404)
 
     if request.method == 'POST':
-        rpt_file = request.files['file']
+        report_file = request.files['file']
         # TODO: Error on invalid files
-        if rpt_file and rpt_file.filename.endswith(REPORT_EXT):
-            rpt_path = get_report_path(rpt_dir, rpt_file.filename)
-            rpt_file.save(rpt_path)
+        if report_file and report_file.filename.endswith(REPORT_EXT):
+            report_path = get_report_path(report_dir, report_file.filename)
+            report_file.save(report_path)
 
-            return redirect(url_for('show_report', rpt_dir=rpt_dir, 
-                                    rpt_name=get_report_name(rpt_path)))
+            return redirect(url_for('show_report', report_dir=report_dir, 
+                                    report_name=get_report_name(report_path)))
 
     return render_template('reports.html',
-                           rpt_dir=rpt_dir,
-                           rpt_names=list_report_dir(rpt_dir))
+                           report_dir=report_dir,
+                           report_names=list_report_dir(report_dir))
 
 
-@app.route('/<rpt_dir>/<rpt_name>')
-def show_report(rpt_dir, rpt_name):
-    rpt_path = get_report_path(rpt_dir, rpt_name + REPORT_EXT)
+@app.route('/<report_dir>/<report_name>')
+def show_report(report_dir, report_name):
+    report_path = get_report_path(report_dir, report_name + REPORT_EXT)
 
     try:
-        title, head, body = parse_input(rpt_path)
+        title, head, body = parse_input(report_path)
     except IOError:
         abort(404)
         
-    return render_template(rpt_dir + '.html', 
-                           rpt_dir=rpt_dir, rpt_name=rpt_name,
+    return render_template(report_dir + '.html', 
+                           report_dir=report_dir, report_name=report_name,
                            title=title, head=head, body=body)
 
 
