@@ -26,6 +26,15 @@ def list_report_dir(report_dir):
     return [ get_report_name(f) for f in glob.glob(report_path) ]
 
 
+def upload_report(report_dir, report_file):
+    if report_file and report_file.filename.endswith(REPORT_EXT):
+        report_path = get_report_path(report_dir, report_file.filename)
+        report_file.save(report_path)
+        return get_report_name(report_path)
+
+    return None
+
+
 def nonblank_lines(line_iter):
     for line in (l.strip() for l in line_iter):
         if line:
@@ -61,14 +70,11 @@ def list_reports(report_dir):
         abort(404)
 
     if request.method == 'POST':
-        report_file = request.files['file']
-        # TODO: Error on invalid files
-        if report_file and report_file.filename.endswith(REPORT_EXT):
-            report_path = get_report_path(report_dir, report_file.filename)
-            report_file.save(report_path)
-
+        report_name = upload_report(report_dir, request.files['file'])
+        # TODO: Show error message
+        if report_name:
             return redirect(url_for('show_report', report_dir=report_dir, 
-                                    report_name=get_report_name(report_path)))
+                                    report_name=report_name))
 
     return render_template('reports.html',
                            report_dir=report_dir,
