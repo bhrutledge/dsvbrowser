@@ -43,6 +43,7 @@ def nonblank_lines(line_iter):
 class Report(object):
 
     def __init__(self, report_path):
+        # TODO: self.date
         self.name = get_report_name(report_path)
 
         with open(report_path, 'U') as report_file:
@@ -56,7 +57,7 @@ class Report(object):
 
 def list_report_dir(report_dir):
     report_path = os.path.join(REPORT_DIR, report_dir, '*' + REPORT_EXT)
-    return [ get_report_name(f) for f in glob.glob(report_path) ]
+    return [ Report(f) for f in glob.glob(report_path) ]
 
 
 @app.route('/')
@@ -83,7 +84,7 @@ def list_reports(report_dir):
                                     report_name=report_name))
 
     return render_template(DIR_TEMPLATE, report_dir=report_dir,
-                           report_names=list_report_dir(report_dir))
+                           reports=list_report_dir(report_dir))
 
 
 @app.route('/<report_dir>/<report_name>')
@@ -95,7 +96,8 @@ def show_report(report_dir, report_name):
     except IOError:
         abort(404)
 
-    return render_template(report_dir + TEMPLATE_EXT, report=report)
+    return render_template(report_dir + TEMPLATE_EXT, 
+                           report_dir=report_dir, report=report)
 
 
 if __name__ == '__main__':
