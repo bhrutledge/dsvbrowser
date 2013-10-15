@@ -11,8 +11,8 @@
     <p>home &gt; </p>
 
     <ul>
-    {% for report_dir in report_dirs %}
-        <li><a href="/{{ report_dir }}">{{ report_dir }}</a></li>
+    {% for subdir in subdirs %}
+        <li><a href="/{{ subdir }}">{{ subdir }}</a></li>
     {% endfor %}
     </ul>
 

@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>{{ report_dir }}</title>
+    <title>{{ subdir }}</title>
 
     <link href="/static/css/normalize.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
@@ -26,7 +26,7 @@
 
 <body>
 
-    <p><a href="/">home</a> &gt; {{ report_dir }}</p>
+    <p><a href="/">home</a> &gt; {{ subdir }}</p>
     
     <form action="" method="post" enctype="multipart/form-data" />
       <p><input type="file" name="file" />
@@ -43,7 +43,7 @@
         <tbody>
         {% for report in reports %}
             <tr>
-                <td><a href="/{{ report_dir }}/{{ report.name }}">{{ report.name }}</a></td>
+                <td><a href="/{{ subdir }}/{{ report.slug }}">{{ report.slug }}</a></td>
                 <td>{{ report.title }}</td>
             </tr>
         {% endfor %}

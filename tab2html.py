@@ -18,12 +18,11 @@ DIRS_TEMPLATE = 'directories' + TEMPLATE_EXT
 REPORTS_TEMPLATE = 'reports' + TEMPLATE_EXT
 
 
-class Report(object):
+def join_path(*args):
+    return os.path.join(REPORT_DIR, *args)
 
-    @staticmethod
-    def _get_path(report_dir, report_fname):
-        return os.path.join(REPORT_DIR, report_dir,
-                            secure_filename(report_fname))
+
+class Report(object):
 
     @staticmethod
     def _nonblank_lines(line_iter):
@@ -31,11 +30,10 @@ class Report(object):
             if line:
                 yield line
     
-    # TODO: s/name/slug
-    # TODO: s/report_//
     def __init__(self, path, content=None):
         self.path = path
-        self.name = os.path.splitext(os.path.basename(path))[0]
+        self.slug = os.path.splitext(os.path.basename(path))[0]
+        self.date = os.path.getmtime(path)
 
         if content:
             line_iter = self._nonblank_lines(content)        
@@ -46,62 +44,59 @@ class Report(object):
             self.body = list(row_iter)
 
     @classmethod
-    def from_path(cls, report_path):
-        with open(report_path, 'U') as report_file:
-            return cls(report_path, report_file)   
+    def from_path(cls, path):
+        with open(path, 'U') as content:
+            return cls(path, content)   
 
     @classmethod
-    def from_name(cls, report_dir, report_name):
-        report_path = cls._get_path(report_dir, report_name + REPORT_EXT)
-        return cls.from_path(report_path)
+    def from_slug(cls, subdir, slug):
+        path = join_path(subdir, secure_filename(slug + REPORT_EXT))
+        return cls.from_path(path)
 
     @classmethod
-    def from_upload(cls, report_dir, report_file):
-        if report_file and report_file.filename.endswith(REPORT_EXT):
-            report_path = cls._get_path(report_dir, report_file.filename)
-            report_file.save(report_path)
-            return cls(report_path)    
+    def from_upload(cls, subdir, upload):
+        if upload and upload.filename.endswith(REPORT_EXT):
+            path = join_path(subdir, secure_filename(upload.filename))
+            upload.save(path)
+            return cls(path)    
 
 
 @app.route('/')
 def list_directories():
     try:
-        report_dirs = [ d for d in os.listdir(REPORT_DIR) 
-                       if os.path.isdir(os.path.join(REPORT_DIR, d)) ]
-    except OSError:
+        subdirs = os.walk(REPORT_DIR).next()[1]
+    except:
         abort(404)
 
-    return render_template(DIRS_TEMPLATE, report_dirs=report_dirs)
+    return render_template(DIRS_TEMPLATE, subdirs=subdirs)
 
 
-@app.route('/<report_dir>', methods=['GET', 'POST'])
-def list_reports(report_dir):
-    if not os.path.isdir(os.path.join(REPORT_DIR, report_dir)):
+@app.route('/<subdir>', methods=['GET', 'POST'])
+def list_reports(subdir):
+    if not os.path.isdir(join_path(subdir)):
         abort(404)
 
     if request.method == 'POST':
         # TODO: Show error messages
-        report = Report.from_upload(report_dir, request.files['file'])
+        report = Report.from_upload(subdir, request.files['file'])
         if report:
-            return redirect(url_for('show_report', report_dir=report_dir, 
-                                    report_name=report.name))
+            return redirect(url_for('show_report', 
+                                    subdir=subdir, slug=report.slug))
 
-    report_glob = os.path.join(REPORT_DIR, report_dir, '*' + REPORT_EXT)
-    reports = [ Report.from_path(f) for f in glob.glob(report_glob) ]
+    reports = [ Report.from_path(f) for 
+                f in glob.glob(join_path(subdir, '*' + REPORT_EXT)) ]
 
-    return render_template(REPORTS_TEMPLATE,
-                           report_dir=report_dir, reports=reports)
+    return render_template(REPORTS_TEMPLATE, subdir=subdir, reports=reports)
 
 
-@app.route('/<report_dir>/<report_name>')
-def show_report(report_dir, report_name):
+@app.route('/<subdir>/<slug>')
+def show_report(subdir, slug):
     try:
-        report = Report.from_name(report_dir, report_name)
-    except IOError:
+        report = Report.from_slug(subdir, slug)
+    except:
         abort(404)
 
-    return render_template(report_dir + TEMPLATE_EXT, 
-                           report_dir=report_dir, report=report)
+    return render_template(subdir + TEMPLATE_EXT, subdir=subdir, report=report)
 
 
 if __name__ == '__main__':
