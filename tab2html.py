@@ -6,15 +6,16 @@ import sys
 from flask import Flask, render_template, request, redirect, url_for, abort
 from werkzeug import secure_filename
 
+
+app = Flask(__name__)
+
+
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 REPORT_DIR = os.path.join(SCRIPT_DIR, 'reports')
 REPORT_EXT = '.txt'
 TEMPLATE_EXT = '.html'
-
-HOME_TEMPLATE = 'directories' + TEMPLATE_EXT
-DIR_TEMPLATE = 'reports' + TEMPLATE_EXT
-
-app = Flask(__name__)
+DIRS_TEMPLATE = 'directories' + TEMPLATE_EXT
+REPORTS_TEMPLATE = 'reports' + TEMPLATE_EXT
 
 
 def get_report_name(report_fname):
@@ -41,6 +42,7 @@ def nonblank_lines(line_iter):
 
 
 class Report(object):
+    # TODO: Add @classmethods from_path, from_name, from_upload
 
     def __init__(self, report_path):
         # TODO: self.date
@@ -55,11 +57,6 @@ class Report(object):
             self.body = list(row_iter)
 
 
-def list_report_dir(report_dir):
-    report_path = os.path.join(REPORT_DIR, report_dir, '*' + REPORT_EXT)
-    return [ Report(f) for f in glob.glob(report_path) ]
-
-
 @app.route('/')
 def list_directories():
     try:
@@ -68,7 +65,7 @@ def list_directories():
     except OSError:
         abort(404)
 
-    return render_template(HOME_TEMPLATE, report_dirs=report_dirs)
+    return render_template(DIRS_TEMPLATE, report_dirs=report_dirs)
 
 
 @app.route('/<report_dir>', methods=['GET', 'POST'])
@@ -83,8 +80,11 @@ def list_reports(report_dir):
             return redirect(url_for('show_report', report_dir=report_dir, 
                                     report_name=report_name))
 
-    return render_template(DIR_TEMPLATE, report_dir=report_dir,
-                           reports=list_report_dir(report_dir))
+    report_glob = os.path.join(REPORT_DIR, report_dir, '*' + REPORT_EXT)
+    reports = [ Report(f) for f in glob.glob(report_glob) ]
+
+    return render_template(REPORTS_TEMPLATE,
+                           report_dir=report_dir, reports=reports)
 
 
 @app.route('/<report_dir>/<report_name>')
