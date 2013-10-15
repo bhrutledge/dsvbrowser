@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>{{ title|e }}</title>
+    <title>{{ report.title|e }}</title>
 
     <link href="/static/css/normalize.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
@@ -35,9 +35,9 @@
     </script>
 </head>
 <body>
-    <p><a href="/">home</a> &gt; <a href="/{{ report_dir }}">{{ report_dir }}</a> &gt; {{ report_name }}</p>
+    <p><a href="/">home</a> &gt; <a href="/{{ report_dir }}">{{ report_dir }}</a> &gt; {{ report.name }}</p>
 
-    <h1>{{ title|e }}</h1>
+    <h1>{{ report.title|e }}</h1>
 
     <p><a href="/static/help.html">Help</a></p>
 
@@ -45,13 +45,13 @@
         <thead>
             <tr>
                 <th data-placeholder="All">Show</th>
-            {% for item in head %}
+            {% for item in report.head %}
                 <th>{{ item|e }}</th>
             {% endfor %}
             </tr>
         </thead>
         <tbody>
-        {% for row in body %}
+        {% for row in report.body %}
             <tr>
                 <td><input type="checkbox" /></td>
             {% for item in row %}    
