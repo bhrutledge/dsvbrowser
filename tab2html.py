@@ -1,4 +1,5 @@
 import csv
+import datetime
 import glob
 import os
 import sys
@@ -33,7 +34,7 @@ class Report(object):
     def __init__(self, path, content=None):
         self.path = path
         self.slug = os.path.splitext(os.path.basename(path))[0]
-        self.date = os.path.getmtime(path)
+        self.date = datetime.datetime.fromtimestamp(os.path.getmtime(path))
 
         if content:
             line_iter = self._nonblank_lines(content)        

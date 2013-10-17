@@ -38,6 +38,7 @@
             <tr>
                 <th>Name</th>
                 <th>Title</th>
+                <th>Date</th>
             </tr>
         </thead>
         <tbody>
@@ -45,6 +46,7 @@
             <tr>
                 <td><a href="/{{ subdir }}/{{ report.slug }}">{{ report.slug }}</a></td>
                 <td>{{ report.title }}</td>
+                <td>{{ report.date }}</td>
             </tr>
         {% endfor %}
         </tbody>
