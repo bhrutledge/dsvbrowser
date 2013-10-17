@@ -1,4 +1,5 @@
 import csv
+import datetime
 import glob
 import os
 import sys
@@ -6,24 +7,20 @@ import sys
 from flask import Flask, render_template, request, redirect, url_for, abort
 from werkzeug import secure_filename
 
-SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-REPORT_DIR = os.path.join(SCRIPT_DIR, 'reports')
-REPORT_EXT = '.txt'
 
 app = Flask(__name__)
 
 
-def get_report(filename):
-    return os.path.splitext(os.path.basename(filename))[0]
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+REPORT_DIR = os.path.join(SCRIPT_DIR, 'reports')
+REPORT_EXT = '.txt'
+TEMPLATE_EXT = '.html'
+DIRS_TEMPLATE = 'directories' + TEMPLATE_EXT
+REPORTS_TEMPLATE = 'reports' + TEMPLATE_EXT
 
 
-def get_report_path(directory, filename):
-    return os.path.join(REPORT_DIR, directory, secure_filename(filename))
-    
-
-def get_reports(directory):
-    filenames = glob.glob(os.path.join(REPORT_DIR, directory, '*' + REPORT_EXT))
-    return [ get_report(f) for f in filenames]
+def join_path(*args):
+    return os.path.join(REPORT_DIR, *args)
 
 
 def nonblank_lines(line_iter):
@@ -32,59 +29,75 @@ def nonblank_lines(line_iter):
             yield line
 
 
-def parse_input(in_path):    
-    with open(in_path, 'U') as in_file:
-        line_iter = nonblank_lines(in_file)        
-        title = line_iter.next()
+class Report(object):
 
-        row_iter = csv.reader(line_iter, delimiter='\t')
-        head_row = row_iter.next()
-        body_rows = list(row_iter)
-        
-    return (title, head_row, body_rows)
+    def __init__(self, path, content=None):
+        self.path = path
+        self.slug = os.path.splitext(os.path.basename(path))[0]
+        self.date = datetime.datetime.fromtimestamp(os.path.getmtime(path))
+
+        if content:
+            line_iter = nonblank_lines(content)        
+            self.title = line_iter.next()
+
+            row_iter = csv.reader(line_iter, delimiter='\t')
+            self.head = row_iter.next()
+            self.body = list(row_iter)
+
+    @classmethod
+    def from_path(cls, path):
+        with open(path, 'U') as content:
+            return cls(path, content)   
+
+    @classmethod
+    def from_slug(cls, subdir, slug):
+        path = join_path(subdir, secure_filename(slug + REPORT_EXT))
+        return cls.from_path(path)
+
+    @classmethod
+    def from_upload(cls, subdir, upload):
+        if upload and upload.filename.endswith(REPORT_EXT):
+            path = join_path(subdir, secure_filename(upload.filename))
+            upload.save(path)
+            return cls(path)    
 
 
 @app.route('/')
 def list_directories():
     try:
-        directories = [ d for d in os.listdir(REPORT_DIR) 
-                        if os.path.isdir(os.path.join(REPORT_DIR, d)) ]
-    except OSError:
+        subdirs = os.walk(REPORT_DIR).next()[1]
+    except:
         abort(404)
 
-    return render_template('directories.html', directories=directories)
+    return render_template(DIRS_TEMPLATE, subdirs=subdirs)
 
 
-@app.route('/<directory>', methods=['GET', 'POST'])
-def list_reports(directory):
-    if not os.path.isdir(os.path.join(REPORT_DIR, directory)):
+@app.route('/<subdir>', methods=['GET', 'POST'])
+def list_reports(subdir):
+    if not os.path.isdir(join_path(subdir)):
         abort(404)
 
     if request.method == 'POST':
-        report_file = request.files['file']
-        if report_file and report_file.filename.endswith(REPORT_EXT):
-            report_path = get_report_path(directory, report_file.filename)
-            report_file.save(report_path)
+        # TODO: Show error messages
+        report = Report.from_upload(subdir, request.files['file'])
+        if report:
+            return redirect(url_for('show_report', 
+                                    subdir=subdir, slug=report.slug))
 
-            return redirect(url_for('show_report', directory=directory, 
-                                    report=get_report(report_path)))
+    reports = [ Report.from_path(f) for 
+                f in glob.glob(join_path(subdir, '*' + REPORT_EXT)) ]
 
-    return render_template('reports.html', directory=directory,
-                           reports=get_reports(directory))
+    return render_template(REPORTS_TEMPLATE, subdir=subdir, reports=reports)
 
 
-@app.route('/<directory>/<report>')
-def show_report(directory, report):
-    report_path = get_report_path(directory, report + REPORT_EXT)
-
+@app.route('/<subdir>/<slug>')
+def show_report(subdir, slug):
     try:
-        title, head, body = parse_input(report_path)
-    except IOError:
+        report = Report.from_slug(subdir, slug)
+    except:
         abort(404)
-        
-    return render_template(directory + '.html', 
-                           directory=directory, report=report,
-                           title=title, head=head, body=body)
+
+    return render_template(subdir + TEMPLATE_EXT, subdir=subdir, report=report)
 
 
 if __name__ == '__main__':

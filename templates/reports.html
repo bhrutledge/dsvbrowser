@@ -1,25 +1,57 @@
 <html>
 <head>
-    <title>{{ directory }}</title>
+    <title>{{ subdir }}</title>
 
     <link href="/static/css/normalize.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/theme.default.css" rel="stylesheet">
+    <link href="/static/css/filter.formatter.css" rel="stylesheet">
+
+
+    <script src="/static/js/jquery-1.10.2.min.js"></script>
+    <script src="/static/js/jquery.tablesorter.min.js"></script>
+    <script src="/static/js/jquery.tablesorter.widgets.min.js"></script>
+    <script src="/static/js/jquery.tablesorter.widgets-filter-formatter.min.js"></script>
+
+    <script>
+    $(function(){
+        $('#directory').tablesorter({
+            widgets : ['stickyHeaders', 'filter'],
+            sortList : [[0,0]],
+            widthFixed : true
+        });
+    });
+    </script>
 </head>
 
 <body>
 
-    <p><a href="/">home</a> &gt; {{ directory }} &gt;</p>
+    <p><a href="/">home</a> &gt; {{ subdir }}</p>
     
     <form action="" method="post" enctype="multipart/form-data" />
       <p><input type="file" name="file" />
          <input type="submit" value="Upload" /></p>
     </form>
 
-    <ul>
-    {% for report in reports %}
-        <li><a href="/{{ directory }}/{{ report }}">{{ report }}</a></li>
-    {% endfor %}
-    </ul>
+    <p><a href="/static/help.html">Help</a></p>
 
+    <table id="directory">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Title</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for report in reports %}
+            <tr>
+                <td><a href="/{{ subdir }}/{{ report.slug }}">{{ report.slug }}</a></td>
+                <td>{{ report.title }}</td>
+                <td>{{ report.date }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>{{ title|e }}</title>
+    <title>{{ report.title|e }}</title>
 
     <link href="/static/css/normalize.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
@@ -16,9 +16,11 @@
     <script>
     $(function(){
         $('#report').tablesorter({
+            sortList : [[1,0]],
+            widthFixed : true,
             widgets : ['zebra', 'stickyHeaders', 'filter'],
             headers: {
-                0: { sorter: 'checkbox' }
+                0: { sorter: 'checkbox' },
             },
             widgetOptions: {
                 filter_functions: {
@@ -27,17 +29,15 @@
                         "Unchecked" : function(e, n, f, i) { return n === "unchecked"; }
                     },
                 },
-                sortList : [[1,0]],
-                widthFixed : true
-            }
+            },
         });
     });
     </script>
 </head>
 <body>
-    <p><a href="/">home</a> &gt; <a href="/{{ directory }}">{{ directory }}</a> &gt; {{ report }}</p>
+    <p><a href="/">home</a> &gt; <a href="/{{ subdir }}">{{ subdir }}</a> &gt; {{ report.slug }}</p>
 
-    <h1>{{ title|e }}</h1>
+    <h1>{{ report.title|e }}</h1>
 
     <p><a href="/static/help.html">Help</a></p>
 
@@ -45,13 +45,13 @@
         <thead>
             <tr>
                 <th data-placeholder="All">Show</th>
-            {% for item in head %}
+            {% for item in report.head %}
                 <th>{{ item|e }}</th>
             {% endfor %}
             </tr>
         </thead>
         <tbody>
-        {% for row in body %}
+        {% for row in report.body %}
             <tr>
                 <td><input type="checkbox" /></td>
             {% for item in row %}    
