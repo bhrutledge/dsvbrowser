@@ -23,21 +23,21 @@ def join_path(*args):
     return os.path.join(REPORT_DIR, *args)
 
 
+def nonblank_lines(line_iter):
+    for line in (l.strip() for l in line_iter):
+        if line:
+            yield line
+
+
 class Report(object):
 
-    @staticmethod
-    def _nonblank_lines(line_iter):
-        for line in (l.strip() for l in line_iter):
-            if line:
-                yield line
-    
     def __init__(self, path, content=None):
         self.path = path
         self.slug = os.path.splitext(os.path.basename(path))[0]
         self.date = datetime.datetime.fromtimestamp(os.path.getmtime(path))
 
         if content:
-            line_iter = self._nonblank_lines(content)        
+            line_iter = nonblank_lines(content)        
             self.title = line_iter.next()
 
             row_iter = csv.reader(line_iter, delimiter='\t')
