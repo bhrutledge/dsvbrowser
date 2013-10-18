@@ -67,25 +67,20 @@ class Report(object):
             return cls(path, content)   
 
     @classmethod
-    def from_slug(cls, subdir, slug):
-        path = join_path(subdir, secure_filename(slug + REPORT_EXT))
-        return cls.from_path(path)
-
-    @classmethod
     def from_upload(cls, subdir, upload):
         if upload and upload.filename.endswith(REPORT_EXT):
             path = join_path(subdir, secure_filename(upload.filename))
             upload.save(path)
             return cls(path)    
 
+    @staticmethod
+    def path_from_slug(subdir, slug):
+        return join_path(subdir, secure_filename(slug + REPORT_EXT))
+
 
 @app.route('/')
 def list_directories():
-    try:
-        subdirs = os.walk(REPORT_DIR).next()[1]
-    except:
-        abort(404)
-
+    subdirs = os.walk(REPORT_DIR).next()[1]
     return render_template(DIRS_TEMPLATE, subdirs=subdirs)
 
 
@@ -109,12 +104,11 @@ def list_reports(subdir):
 
 @app.route('/<subdir>/<slug>')
 def show_report(subdir, slug):
-    # TODO: Log exceptions
-    try:
-        report = Report.from_slug(subdir, slug)
-    except:
+    path = Report.path_from_slug(subdir, slug)
+    if not os.path.isfile(path):
         abort(404)
 
+    report = Report.from_path(path)
     return render_template(subdir + TEMPLATE_EXT, subdir=subdir, report=report)
 
 
