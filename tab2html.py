@@ -1,3 +1,4 @@
+import codecs
 import csv
 import datetime
 import glob
@@ -29,6 +30,22 @@ def nonblank_lines(line_iter):
             yield line
 
 
+# Source: http://docs.python.org/2/library/csv.html#examples
+
+def unicode_csv_reader(unicode_csv_data, dialect=csv.excel, **kwargs):
+    # csv.py doesn't do Unicode; encode temporarily as UTF-8:
+    csv_reader = csv.reader(utf_8_encoder(unicode_csv_data),
+                            dialect=dialect, **kwargs)
+    for row in csv_reader:
+        # decode UTF-8 back to Unicode, cell by cell:
+        yield [unicode(cell, 'utf-8') for cell in row]
+
+
+def utf_8_encoder(unicode_csv_data):
+    for line in unicode_csv_data:
+        yield line.encode('utf-8')
+
+
 class Report(object):
 
     def __init__(self, path, content=None):
@@ -40,13 +57,13 @@ class Report(object):
             line_iter = nonblank_lines(content)        
             self.title = line_iter.next()
 
-            row_iter = csv.reader(line_iter, delimiter='\t')
+            row_iter = unicode_csv_reader(line_iter, delimiter='\t')
             self.head = row_iter.next()
             self.body = list(row_iter)
 
     @classmethod
     def from_path(cls, path):
-        with open(path, 'U') as content:
+        with codecs.open(path, 'U', encoding='utf-8') as content:
             return cls(path, content)   
 
     @classmethod
@@ -92,6 +109,7 @@ def list_reports(subdir):
 
 @app.route('/<subdir>/<slug>')
 def show_report(subdir, slug):
+    # TODO: Log exceptions
     try:
         report = Report.from_slug(subdir, slug)
     except:
