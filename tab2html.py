@@ -9,11 +9,11 @@ from flask import Flask, render_template, request, redirect, url_for, abort
 from werkzeug import secure_filename
 
 
-app = Flask(__name__)
+app = Flask(__name__, instance_relative_config=True)
+app.config.from_pyfile('config.py', silent=True)
 
 
-SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-REPORT_DIR = os.path.join(SCRIPT_DIR, 'reports')
+REPORT_DIR = os.path.join(app.instance_path, 'reports')
 REPORT_EXT = '.txt'
 TEMPLATE_EXT = '.html'
 DIRS_TEMPLATE = 'directories' + TEMPLATE_EXT
@@ -113,4 +113,4 @@ def show_report(subdir, slug):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
