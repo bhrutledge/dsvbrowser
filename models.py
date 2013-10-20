@@ -3,21 +3,12 @@ import csv
 import datetime
 import glob
 import os
-import sys
 
-from flask import Flask, render_template, request, redirect, url_for, abort
+from app import app
 from werkzeug import secure_filename
-
-
-app = Flask(__name__, instance_relative_config=True)
-app.config.from_pyfile('config.py', silent=True)
-
 
 REPORT_DIR = os.path.join(app.instance_path, 'reports')
 REPORT_EXT = '.txt'
-TEMPLATE_EXT = '.html'
-DIRS_TEMPLATE = 'directories' + TEMPLATE_EXT
-REPORTS_TEMPLATE = 'reports' + TEMPLATE_EXT
 
 
 def join_path(*args):
@@ -67,50 +58,29 @@ class Report(object):
             return cls(path, content)   
 
     @classmethod
+    def from_slug(cls, subdir, slug):
+        path = join_path(subdir, secure_filename(slug + REPORT_EXT))
+        if not os.path.isfile(path):
+            return None
+
+        return cls.from_path(path)
+
+    @classmethod
     def from_upload(cls, subdir, upload):
         if upload and upload.filename.endswith(REPORT_EXT):
             path = join_path(subdir, secure_filename(upload.filename))
             upload.save(path)
             return cls(path)    
 
+    @classmethod
+    def from_subdir(cls, subdir):
+        return [ cls.from_path(f) for 
+                 f in glob.glob(join_path(subdir, '*' + REPORT_EXT)) ]
+
     @staticmethod
-    def path_from_slug(subdir, slug):
-        return join_path(subdir, secure_filename(slug + REPORT_EXT))
+    def get_subdirs():
+        return os.walk(REPORT_DIR).next()[1]
 
-
-@app.route('/')
-def list_directories():
-    subdirs = os.walk(REPORT_DIR).next()[1]
-    return render_template(DIRS_TEMPLATE, subdirs=subdirs)
-
-
-@app.route('/<subdir>', methods=['GET', 'POST'])
-def list_reports(subdir):
-    if not os.path.isdir(join_path(subdir)):
-        abort(404)
-
-    if request.method == 'POST':
-        # TODO: Show error messages
-        report = Report.from_upload(subdir, request.files['file'])
-        if report:
-            return redirect(url_for('show_report', 
-                                    subdir=subdir, slug=report.slug))
-
-    reports = [ Report.from_path(f) for 
-                f in glob.glob(join_path(subdir, '*' + REPORT_EXT)) ]
-
-    return render_template(REPORTS_TEMPLATE, subdir=subdir, reports=reports)
-
-
-@app.route('/<subdir>/<slug>')
-def show_report(subdir, slug):
-    path = Report.path_from_slug(subdir, slug)
-    if not os.path.isfile(path):
-        abort(404)
-
-    report = Report.from_path(path)
-    return render_template(subdir + TEMPLATE_EXT, subdir=subdir, report=report)
-
-
-if __name__ == '__main__':
-    app.run()
+    @staticmethod
+    def is_subdir(subdir):
+        return os.path.isdir(join_path(subdir))
