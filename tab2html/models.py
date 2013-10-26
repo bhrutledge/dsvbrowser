@@ -9,14 +9,9 @@ from werkzeug.exceptions import Forbidden, NotFound
 
 from . import app
 
+
 # TODO: Move constants and methods to class?
-
-REPORT_DIR = os.path.join(app.instance_path, 'reports')
 REPORT_EXT = '.txt'
-
-
-def join_path(*args):
-    return os.path.join(REPORT_DIR, *args)
 
 
 def nonblank_lines(line_iter):
@@ -73,40 +68,41 @@ class Report(object):
         except EnvironmentError as e:
             raise_errno(e)
 
-    @classmethod
-    def from_slug(cls, subdir, slug):
-        path = join_path(subdir, secure_filename(slug + REPORT_EXT))
-        return cls.from_path(path)
 
-    @classmethod
-    def from_upload(cls, subdir, upload):
+class ReportDirectory(object):
+
+    def __init__(self, path):
+        self.path = path
+
+    def get_report_paths(self):
+        try:
+            return [ os.path.join(self.path, f) for f in os.listdir(self.path)
+                     if f.endswith(REPORT_EXT) ]
+        except EnvironmentError as e:
+            raise_errno(e)
+
+    def get_reports(self):
+        reports = []
+        for p in self.get_report_paths():
+            try:
+                reports.append(Report.from_path(p))
+            except:
+                continue
+
+        return reports
+
+    def get_report(self, slug):
+        path = os.path.join(self.path, secure_filename(slug + REPORT_EXT))
+        return Report.from_path(path)
+
+    def upload_file(self, upload):
         if upload and upload.filename.endswith(REPORT_EXT):
-            path = join_path(subdir, secure_filename(upload.filename))
+            path = os.path.join(self.path, secure_filename(upload.filename))
             
             try:
                 upload.save(path)
             except EnvironmentError as e:
                 raise_errno(e)
             
-            return cls(path)    
+            return Report(path)    
 
-    @classmethod
-    def from_subdir(cls, subdir):
-        try:
-            filenames = [ f for f in os.listdir(join_path(subdir))
-                          if f.endswith(REPORT_EXT) ]
-        except EnvironmentError as e:
-            raise_errno(e)
-
-        reports = []
-        for f in filenames:
-            try:
-                reports.append(cls.from_path(join_path(subdir, f)))
-            except:
-                continue
-
-        return reports
-
-    @staticmethod
-    def get_subdirs():
-        return os.walk(REPORT_DIR).next()[1]
