@@ -4,9 +4,12 @@ import datetime
 import errno
 import os
 
-from app import app
 from werkzeug import secure_filename
 from werkzeug.exceptions import Forbidden, NotFound
+
+from . import app
+
+# TODO: Move constants and methods to class?
 
 REPORT_DIR = os.path.join(app.instance_path, 'reports')
 REPORT_EXT = '.txt'

@@ -1,6 +1,6 @@
-from app import app
 from flask import render_template, request, redirect, url_for, abort
-from models import Report
+from . import app
+from .models import Report
 
 
 TEMPLATE_EXT = '.html'
