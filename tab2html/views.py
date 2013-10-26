@@ -16,22 +16,29 @@ def list_directories():
 
 @app.route('/<subdir>', methods=['GET', 'POST'])
 def list_reports(subdir):
+    # TODO: Use exceptions
     if not Report.is_subdir(subdir):
         abort(404)
 
+    error = None
+
     if request.method == 'POST':
-        # TODO: Show error messages
+        # TODO: Use exceptions
         report = Report.from_upload(subdir, request.files['file'])
         if report:
             return redirect(url_for('show_report', 
                                     subdir=subdir, slug=report.slug))
+        else:
+            error = "Invalid file"
 
     reports = Report.from_subdir(subdir)
-    return render_template(REPORTS_TEMPLATE, subdir=subdir, reports=reports)
+    return render_template(REPORTS_TEMPLATE, subdir=subdir, reports=reports,
+                           error=error)
 
 
 @app.route('/<subdir>/<slug>')
 def show_report(subdir, slug):
+    # TODO: Use exceptions
     report = Report.from_slug(subdir, slug)
     if not report:
         abort(404)
