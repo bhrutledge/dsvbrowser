@@ -7,8 +7,6 @@ import os
 from werkzeug import secure_filename
 from werkzeug.exceptions import Forbidden, NotFound
 
-from . import app
-
 
 # TODO: Move constants and methods to class?
 REPORT_EXT = '.txt'

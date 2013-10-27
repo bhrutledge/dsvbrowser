@@ -1,9 +1,11 @@
 import os
 
 from flask import Flask
+from .views import frontend
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py', silent=True)
+app.register_blueprint(frontend)
 
 if not app.debug and not app.testing:
     import logging
@@ -39,7 +41,3 @@ if not app.debug and not app.testing:
         app.logger.addHandler(mail_handler)
     except KeyError:
         pass
-
-
-from . import models
-from . import views

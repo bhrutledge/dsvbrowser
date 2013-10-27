@@ -1,7 +1,7 @@
 import os
+import flask
 
-from flask import render_template, request, redirect, url_for, abort
-from . import app
+from flask import Blueprint, render_template, request, redirect, url_for, abort
 from .models import Report, ReportDirectory
 
 
@@ -10,18 +10,21 @@ DIRS_TEMPLATE = 'directories' + TEMPLATE_EXT
 REPORTS_TEMPLATE = 'reports' + TEMPLATE_EXT
 
 
+frontend = Blueprint('frontend', __name__)
+
+
 # TODO: Move to config and/or util module?
 def report_dir_path(*args):
-    return os.path.join(app.instance_path, 'reports', *args)
+    return os.path.join(flask.current_app.instance_path, 'reports', *args)
 
 
-@app.route('/')
+@frontend.route('/')
 def list_subdirs():
     subdirs = os.walk(report_dir_path()).next()[1]
     return render_template(DIRS_TEMPLATE, subdirs=subdirs)
 
 
-@app.route('/<subdir>', methods=['GET', 'POST'])
+@frontend.route('/<subdir>', methods=['GET', 'POST'])
 def list_reports(subdir):
     error = None
     report_dir = ReportDirectory(report_dir_path(subdir))
@@ -39,7 +42,7 @@ def list_reports(subdir):
                            error=error)
 
 
-@app.route('/<subdir>/<slug>')
+@frontend.route('/<subdir>/<slug>')
 def show_report(subdir, slug):
     report_dir = ReportDirectory(report_dir_path(subdir))
     report = report_dir.get_report(slug)
