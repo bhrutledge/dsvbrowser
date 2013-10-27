@@ -3,14 +3,22 @@ import os
 from flask import Flask
 from .views import frontend
 
-app = Flask(__name__, instance_relative_config=True)
-app.config.from_pyfile('config.py', silent=True)
-app.register_blueprint(frontend)
 
-if not app.debug and not app.testing:
+def create_app(instance_path=None): 
+    app = Flask(__name__, instance_relative_config=True,
+                instance_path=instance_path)
+
+    app.config.from_pyfile('config.py', silent=True)
+    app.register_blueprint(frontend)
+
+    if not app.debug and not app.testing:
+        configure_logging(app)
+
+    return app
+
+
+def configure_logging(app):
     import logging
-    import os
-
     from logging.handlers import RotatingFileHandler, SMTPHandler
 
     app.logger.setLevel(logging.INFO)

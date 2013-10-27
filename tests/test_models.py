@@ -3,19 +3,17 @@ import unittest
 
 from werkzeug.exceptions import NotFound
 
-from tab2html import app, models
+from tab2html import create_app
 from tab2html.models import Report, ReportDirectory
 
 
 class TestCase(unittest.TestCase):
 
     def setUp(self):
-        # TODO: Testing instance folder
-        app.config['TESTING'] = True
+        app = create_app(os.path.dirname(os.path.realpath(__file__)))
         self.app = app.test_client()
 
-        test_dir = os.path.dirname(os.path.realpath(__file__))
-        self.inv_path = os.path.join(test_dir, 'reports', 'inventory')
+        self.inv_path = os.path.join(app.instance_path, 'reports', 'inventory')
         self.slugs = ['one', 'two']
         self.filenames = [ s + '.txt' for s in self.slugs ]
         self.paths = [ os.path.join(self.inv_path, f) for f in self.filenames ]

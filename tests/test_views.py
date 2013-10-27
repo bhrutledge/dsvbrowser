@@ -1,12 +1,12 @@
+import os
 import unittest
 
-from tab2html import app
+from tab2html import create_app
 
 class TestCase(unittest.TestCase):
 
     def setUp(self):
-        # TODO: Testing instance folder
-        app.config['TESTING'] = True
+        app = create_app(os.path.dirname(os.path.realpath(__file__)))
         self.app = app.test_client()
         self.subdirs = ['inventory']
 
