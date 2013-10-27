@@ -16,7 +16,7 @@ def report_dir_path(*args):
 
 
 @app.route('/')
-def list_directories():
+def list_subdirs():
     subdirs = os.walk(report_dir_path()).next()[1]
     return render_template(DIRS_TEMPLATE, subdirs=subdirs)
 

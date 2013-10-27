@@ -10,6 +10,7 @@ from tab2html.models import Report, ReportDirectory
 class TestCase(unittest.TestCase):
 
     def setUp(self):
+        # TODO: Testing instance folder
         app.config['TESTING'] = True
         self.app = app.test_client()
 
@@ -87,6 +88,9 @@ class ReportDirectoryTestCase(TestCase):
         for report in reports:
             self.assertIn(report.path, self.paths)
 
+        # TODO: Skip invalid extensions
+        # TODO: Skip unopenable files
+
     def test_get_report(self):
         report_dir = ReportDirectory(self.inv_path)
         report = report_dir.get_report(self.slugs[0])
@@ -97,6 +101,6 @@ class ReportDirectoryTestCase(TestCase):
         with self.assertRaises(NotFound):
             report_dir.get_report('three')
 
-# File upload
-# Skip invalid extensions
-# Skip unopenable files
+    def test_upload_file(self):
+        pass
+
