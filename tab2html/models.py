@@ -14,12 +14,6 @@ from . import app
 REPORT_EXT = '.txt'
 
 
-def nonblank_lines(line_iter):
-    for line in (l.strip() for l in line_iter):
-        if line:
-            yield line
-
-
 def raise_errno(e):
     if e.errno in [errno.EPERM, errno.EACCES]:
         raise Forbidden
@@ -27,6 +21,12 @@ def raise_errno(e):
         raise NotFound
     else:
         raise
+
+
+def nonblank_lines(line_iter):
+    for line in (l.strip() for l in line_iter):
+        if line:
+            yield line
 
 
 # Source: http://docs.python.org/2/library/csv.html#examples
@@ -47,18 +47,32 @@ def utf_8_encoder(unicode_csv_data):
 
 class Report(object):
 
-    def __init__(self, path, content=None):
+    def __init__(self, path, content=[]):
         self.path = path
         self.slug = os.path.splitext(os.path.basename(path))[0]
         self.date = datetime.datetime.fromtimestamp(os.path.getmtime(path))
 
-        if content:
-            line_iter = nonblank_lines(content)        
+        self.title = ''
+        self.head = []
+        self.body = []
+        self.content = content
+
+    @property
+    def content(self):
+        return self._content
+
+    @content.setter
+    def content(self, value):
+        self._content = value
+        try:
+            line_iter = nonblank_lines(value)
             self.title = line_iter.next()
 
             row_iter = unicode_csv_reader(line_iter, delimiter='\t')
             self.head = row_iter.next()
             self.body = list(row_iter)
+        except StopIteration:
+            pass
 
     @classmethod
     def from_path(cls, path):
