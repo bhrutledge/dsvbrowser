@@ -1,21 +1,11 @@
 import os
-import flask
 
 from flask import Blueprint, render_template, request, redirect, url_for, abort
 from .models import Report, ReportDirectory
-
-
-TEMPLATE_EXT = '.html'
-DIRS_TEMPLATE = 'directories' + TEMPLATE_EXT
-REPORTS_TEMPLATE = 'reports' + TEMPLATE_EXT
-
+from .constants import *
+from .utils import report_dir_path
 
 frontend = Blueprint('frontend', __name__)
-
-
-# TODO: Move to config and/or util module?
-def report_dir_path(*args):
-    return os.path.join(flask.current_app.instance_path, 'reports', *args)
 
 
 @frontend.route('/')

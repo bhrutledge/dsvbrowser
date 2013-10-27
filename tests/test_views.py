@@ -22,11 +22,11 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/' + subdir)
         self.assertEqual(rv.status_code, 200)
         self.assertIn(subdir, rv.data)
+        # TODO: Report list
 
         rv = self.app.get('/foo')
         self.assertEqual(rv.status_code, 404)
-        # TODO: Report list
-
+        
         # TODO: Forbidden
 
     def test_show_report(self):

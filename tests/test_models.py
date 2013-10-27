@@ -5,6 +5,7 @@ from werkzeug.exceptions import NotFound
 
 from tab2html import create_app
 from tab2html.models import Report, ReportDirectory
+from tab2html.constants import *
 
 
 class TestCase(unittest.TestCase):
@@ -13,10 +14,12 @@ class TestCase(unittest.TestCase):
         app = create_app(os.path.dirname(os.path.realpath(__file__)))
         self.app = app.test_client()
 
-        self.inv_path = os.path.join(app.instance_path, 'reports', 'inventory')
+        self.subdir_path = os.path.join(app.instance_path, REPORT_DIR, 
+                                        'inventory')
         self.slugs = ['one', 'two']
-        self.filenames = [ s + '.txt' for s in self.slugs ]
-        self.paths = [ os.path.join(self.inv_path, f) for f in self.filenames ]
+        self.filenames = [ s + REPORT_EXT for s in self.slugs ]
+        self.paths = [ os.path.join(self.subdir_path, f)
+                       for f in self.filenames ]
 
 
 class ReportTestCase(TestCase):
@@ -69,7 +72,7 @@ class ReportTestCase(TestCase):
 class ReportDirectoryTestCase(TestCase):
 
     def test_get_report_paths(self):
-        report_dir = ReportDirectory(self.inv_path)
+        report_dir = ReportDirectory(self.subdir_path)
         paths = report_dir.get_report_paths()
         self.assertEqual(paths, self.paths)
 
@@ -79,7 +82,7 @@ class ReportDirectoryTestCase(TestCase):
             report_dir.get_report_paths()
 
     def test_get_reports(self):
-        report_dir = ReportDirectory(self.inv_path)
+        report_dir = ReportDirectory(self.subdir_path)
         reports = report_dir.get_reports()
 
         self.assertEqual(len(reports), len(self.paths))
@@ -90,7 +93,7 @@ class ReportDirectoryTestCase(TestCase):
         # TODO: Skip unopenable files
 
     def test_get_report(self):
-        report_dir = ReportDirectory(self.inv_path)
+        report_dir = ReportDirectory(self.subdir_path)
         report = report_dir.get_report(self.slugs[0])
 
         self.assertEqual(report.path, self.paths[0])
