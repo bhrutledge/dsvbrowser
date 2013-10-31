@@ -1,18 +1,22 @@
 import os
+import shutil
 import unittest
 
 from StringIO import StringIO
 from tab2html import create_app
+from tab2html.constants import *
+from .utils import AppTestCase
 
 
 def view_url(*args):
     return '/'.join([''] + list(args))
 
 
-class TestCase(unittest.TestCase):
+class ViewTestCase(AppTestCase):
 
     def setUp(self):
-        self.app = create_app(os.path.dirname(os.path.realpath(__file__)))
+        super(ViewTestCase, self).setUp()
+
         self.client = self.app.test_client()
         self.subdirs = {'inventory' : ['report_one', 'report_two']}
 
@@ -57,4 +61,28 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_upload_file(self):
+        subdir = 'inventory'
+        slug = 'test'
+        contents = """
+        report title
+
+        column one\tcolumn two\t
+        data one\tdata two\t
+        """
+
+        rv = self.client.post(view_url(subdir), 
+            data={'file': (StringIO(contents), slug + REPORT_EXT)},
+            follow_redirects=True)
+
+        # TODO: Test redirect url
+
+        self.assertEqual(rv.status_code, 200)
+        self.assertIn('report title', rv.data)
+        self.assertIn('column one', rv.data)
+        self.assertIn('data two', rv.data)
+
+    def test_upload_file_invalid(self):
+        pass
+
+    def test_upload_file_not_found(self):
         pass

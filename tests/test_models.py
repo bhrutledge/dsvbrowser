@@ -1,19 +1,20 @@
 import os
+import shutil
 import unittest
 
 from werkzeug.exceptions import NotFound
 
-from tab2html import create_app
 from tab2html.models import Report, ReportDirectory
 from tab2html.constants import *
+from .utils import AppTestCase
 
 
-class TestCase(unittest.TestCase):
+class ModelTestCase(AppTestCase):
 
     def setUp(self):
-        app = create_app(os.path.dirname(os.path.realpath(__file__)))
+        super(ModelTestCase, self).setUp()
 
-        self.subdir_path = os.path.join(app.instance_path, REPORT_DIR, 
+        self.subdir_path = os.path.join(self.instance_path, REPORT_DIR, 
                                         'inventory')
         self.slugs = ['report_one', 'report_two']
         self.filenames = [ s + REPORT_EXT for s in self.slugs ]
@@ -21,7 +22,7 @@ class TestCase(unittest.TestCase):
                        for f in self.filenames ]
 
 
-class ReportTestCase(TestCase):
+class ReportTestCase(ModelTestCase):
 
     def setUp(self):
         super(ReportTestCase, self).setUp()
@@ -68,7 +69,7 @@ class ReportTestCase(TestCase):
         self.assertEqual(report.body, [])
 
 
-class ReportDirectoryTestCase(TestCase):
+class ReportDirectoryTestCase(ModelTestCase):
 
     def test_get_report_paths(self):
         report_dir = ReportDirectory(self.subdir_path)
