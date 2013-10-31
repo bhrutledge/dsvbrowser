@@ -16,7 +16,7 @@ class TestCase(unittest.TestCase):
 
         self.subdir_path = os.path.join(app.instance_path, REPORT_DIR, 
                                         'inventory')
-        self.slugs = ['one', 'two']
+        self.slugs = ['report_one', 'report_two']
         self.filenames = [ s + REPORT_EXT for s in self.slugs ]
         self.paths = [ os.path.join(self.subdir_path, f)
                        for f in self.filenames ]
