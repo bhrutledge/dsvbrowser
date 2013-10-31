@@ -14,8 +14,9 @@ class ModelTestCase(AppTestCase):
     def setUp(self):
         super(ModelTestCase, self).setUp()
 
-        self.subdir_path = os.path.join(self.instance_path, REPORT_DIR, 
-                                        'inventory')
+        self.subdir = 'inventory'
+        self.subdir_path = os.path.join(
+            self.instance_path, REPORT_DIR, self.subdir)
         self.slugs = ['report_one', 'report_two']
         self.filenames = [ s + REPORT_EXT for s in self.slugs ]
         self.paths = [ os.path.join(self.subdir_path, f)
@@ -84,14 +85,12 @@ class ReportDirectoryTestCase(ModelTestCase):
         for report in reports:
             self.assertIn(report.path, self.paths)
 
-        # TODO: Skip invalid extensions
-        # TODO: Skip unopenable files
+    # TODO: def test_get_reports_invalid_exts(self):
+    # TODO: def test_get_reports_unopenable(self):
 
     def test_get_report(self):
         report_dir = ReportDirectory(self.subdir_path)
         report = report_dir.get_report(self.slugs[0])
         self.assertEqual(report.path, self.paths[0])
 
-    def test_upload_file(self):
-        pass
-
+    # TODO: def test_upload_file(self):
