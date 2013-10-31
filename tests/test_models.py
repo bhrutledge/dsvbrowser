@@ -12,7 +12,6 @@ class TestCase(unittest.TestCase):
 
     def setUp(self):
         app = create_app(os.path.dirname(os.path.realpath(__file__)))
-        self.app = app.test_client()
 
         self.subdir_path = os.path.join(app.instance_path, REPORT_DIR, 
                                         'inventory')
