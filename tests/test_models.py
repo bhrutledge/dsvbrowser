@@ -76,11 +76,6 @@ class ReportDirectoryTestCase(TestCase):
         paths = report_dir.get_report_paths()
         self.assertEqual(paths, self.paths)
 
-        # TODO: Test in views
-        report_dir = ReportDirectory('foo')
-        with self.assertRaises(NotFound):
-            report_dir.get_report_paths()
-
     def test_get_reports(self):
         report_dir = ReportDirectory(self.subdir_path)
         reports = report_dir.get_reports()
@@ -95,12 +90,7 @@ class ReportDirectoryTestCase(TestCase):
     def test_get_report(self):
         report_dir = ReportDirectory(self.subdir_path)
         report = report_dir.get_report(self.slugs[0])
-
         self.assertEqual(report.path, self.paths[0])
-
-        # TODO: Test in views
-        with self.assertRaises(NotFound):
-            report_dir.get_report('three')
 
     def test_upload_file(self):
         pass

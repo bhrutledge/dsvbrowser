@@ -40,3 +40,7 @@ def utf_8_encoder(unicode_csv_data):
 
 def report_dir_path(*args):
     return os.path.join(flask.current_app.instance_path, REPORT_DIR, *args)
+
+
+def valid_upload(upload):
+    return bool(upload and upload.filename.endswith(REPORT_EXT))

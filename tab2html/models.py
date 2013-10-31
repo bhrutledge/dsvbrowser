@@ -38,12 +38,8 @@ class Report(object):
 
     @classmethod
     def from_path(cls, path):
-        try:
-            with codecs.open(path, 'U', encoding='utf-8') as content:
-                return cls(path, content)
-        except EnvironmentError as e:
-            raise_errno(e)
-
+        with codecs.open(path, 'U', encoding='utf-8') as content:
+            return cls(path, content)
 
 class ReportDirectory(object):
 
@@ -51,11 +47,8 @@ class ReportDirectory(object):
         self.path = path
 
     def get_report_paths(self):
-        try:
-            return [ os.path.join(self.path, f) for f in os.listdir(self.path)
-                     if f.endswith(REPORT_EXT) ]
-        except EnvironmentError as e:
-            raise_errno(e)
+        return [ os.path.join(self.path, f) for f in os.listdir(self.path)
+                 if f.endswith(REPORT_EXT) ]
 
     def get_reports(self):
         reports = []
@@ -63,6 +56,7 @@ class ReportDirectory(object):
             try:
                 reports.append(Report.from_path(p))
             except:
+                # Ignore problematic paths
                 continue
 
         return reports
@@ -72,13 +66,7 @@ class ReportDirectory(object):
         return Report.from_path(path)
 
     def upload_file(self, upload):
-        if upload and upload.filename.endswith(REPORT_EXT):
-            path = os.path.join(self.path, secure_filename(upload.filename))
-            
-            try:
-                upload.save(path)
-            except EnvironmentError as e:
-                raise_errno(e)
-            
-            return Report(path)    
+        path = os.path.join(self.path, secure_filename(upload.filename))            
+        upload.save(path)
+        return Report(path)    
 
