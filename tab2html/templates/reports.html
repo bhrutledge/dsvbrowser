@@ -7,18 +7,29 @@
     <link href="/static/css/theme.default.css" rel="stylesheet">
     <link href="/static/css/filter.formatter.css" rel="stylesheet">
 
-
     <script src="/static/js/jquery-1.10.2.min.js"></script>
     <script src="/static/js/jquery.tablesorter.min.js"></script>
     <script src="/static/js/jquery.tablesorter.widgets.min.js"></script>
     <script src="/static/js/jquery.tablesorter.widgets-filter-formatter.min.js"></script>
+    <script src="/static/js/parsers/parser-input-select.js"></script>
 
     <script>
     $(function(){
         $('#directory').tablesorter({
+            sortList : [[3,1]],
+            widthFixed : true,
             widgets : ['stickyHeaders', 'filter'],
-            sortList : [[2,1]],
-            widthFixed : true
+            headers: {
+                0: { sorter: 'checkbox' },
+            },
+            widgetOptions: {
+                filter_functions: {
+                    0: { 
+                        "Checked" : function(e, n, f, i) { return n === "checked"; },
+                        "Unchecked" : function(e, n, f, i) { return n === "unchecked"; }
+                    },
+                },
+            },
         });
     });
     </script>
@@ -41,23 +52,29 @@
 
     <p><a href="/static/help.html">Help</a></p>
 
-    <table id="directory">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Title</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for report in reports %}
-            <tr>
-                <td><a href="/{{ subdir }}/{{ report.slug }}">{{ report.slug }}</a></td>
-                <td>{{ report.title }}</td>
-                <td>{{ report.date }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <form action="?action=delete" method="post">
+        <table id="directory">
+            <thead>
+                <tr>
+                    <th data-placeholder="All">Show</th>
+                    <th>Name</th>
+                    <th>Title</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for report in reports %}
+                <tr>
+                    <td><input type="checkbox" name="slug" value="{{ report.slug }}"/></td>
+                    <td><a href="/{{ subdir }}/{{ report.slug }}">{{ report.slug }}</a></td>
+                    <td>{{ report.title }}</td>
+                    <td>{{ report.date }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <input type="submit" value="Delete Checked" />
+    </form>
 </body>
 </html>

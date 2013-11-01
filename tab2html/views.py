@@ -33,6 +33,13 @@ def list_reports(subdir):
                     url_for('.show_report', subdir=subdir, slug=report.slug))
             else:
                 error = "Invalid file"
+        elif action == 'delete':
+            for slug in request.form.getlist('slug'):
+                try:
+                    report_dir.delete_report(slug)
+                except EnvironmentError as e:
+                    pass
+            return redirect(url_for('.list_reports', subdir=subdir))
 
     try:
         reports = report_dir.get_reports()

@@ -1,4 +1,6 @@
 from StringIO import StringIO
+from werkzeug.datastructures import MultiDict
+
 from tab2html import create_app
 from tab2html.constants import *
 from .utils import AppTestCase
@@ -7,6 +9,7 @@ from .utils import AppTestCase
 SUBDIR = 'inventory'
 SUBDIR_SLUGS = {'inventory' : ['report_one', 'report_two']}
 UPLOAD_ACTION = '?action=upload'
+DELETE_ACTION = '?action=delete'
 
 
 def view_url(*args):
@@ -135,3 +138,29 @@ class ViewTestCase(AppTestCase):
                               follow_redirects=True)
         
         self.assertEqual(rsp.status_code, 404)
+
+    def test_delete_reports(self):
+        rsp = self.client.post(view_url(SUBDIR + DELETE_ACTION))
+        self.assertEqual(rsp.status_code, 302)
+        self.assertIn(view_url(SUBDIR), rsp.location)
+
+    def test_delete_reports_redirect(self):
+        slug = SUBDIR_SLUGS[SUBDIR][0]
+
+        rsp = self.client.post(view_url(SUBDIR + DELETE_ACTION),
+                               data={'slug': slug},
+                               follow_redirects=True)
+
+        self.assertEqual(rsp.status_code, 200)
+        self.assertNotIn(slug, rsp.data)
+
+    def test_delete_reports_multi_redirect(self):
+        slugs = SUBDIR_SLUGS[SUBDIR]
+
+        rsp = self.client.post(view_url(SUBDIR + DELETE_ACTION),
+                               data=MultiDict([('slug', s) for s in slugs]),
+                               follow_redirects=True)
+
+        self.assertEqual(rsp.status_code, 200)
+        for slug in slugs:
+            self.assertNotIn(slug, rsp.data)
