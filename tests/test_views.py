@@ -22,13 +22,13 @@ class ViewTestCase(AppTestCase):
         super(ViewTestCase, self).setUp()
         self.client = self.app.test_client()
 
-    def test_list_subdirs(self):
+    def test_show_index(self):
         rsp = self.client.get(view_url(''))
         self.assertEqual(rsp.status_code, 200)
         for subdir in SUBDIR_SLUGS:
             self.assertIn(subdir, rsp.data)
 
-    def test_list_reports(self):
+    def test_show_subdir(self):
         for subdir in SUBDIR_SLUGS:
             rsp = self.client.get(view_url(subdir))
             self.assertEqual(rsp.status_code, 200)
@@ -37,12 +37,12 @@ class ViewTestCase(AppTestCase):
             for slug in SUBDIR_SLUGS[subdir]:
                 self.assertIn(view_url(subdir, slug), rsp.data)
 
-    def test_list_reports_not_found(self):
+    def test_show_subdir_not_found(self):
         rsp = self.client.get(view_url('foo'))
         self.assertEqual(rsp.status_code, 404)
-        
-    def test_list_reports_forbidden(self):
-        pass
+
+    # TODO: def test_show_subdir_post(self):
+    # TODO: def test_show_subdir_forbidden(self):
 
     def test_show_report(self):
         for subdir in SUBDIR_SLUGS:
@@ -59,6 +59,7 @@ class ViewTestCase(AppTestCase):
         rsp = self.client.get(view_url('foo', 'bar'))
         self.assertEqual(rsp.status_code, 404)
 
+    # TODO: def test_show_report_post(self):
     # TODO: def test_show_report_forbidden(self):
 
     def test_upload_file(self):
@@ -113,30 +114,24 @@ class ViewTestCase(AppTestCase):
     def test_delete_report(self):
         slug = SUBDIR_SLUGS[SUBDIR][0]
 
-        rsp = self.client.post(view_url(SUBDIR, slug, 'delete'))
+        rsp = self.client.post(view_url(SUBDIR, slug + DELETE_ACTION))
         self.assertEqual(rsp.status_code, 302)
         self.assertIn(view_url(SUBDIR), rsp.location)
 
     def test_delete_report_redirect(self):
         slug = SUBDIR_SLUGS[SUBDIR][0]
 
-        rsp = self.client.post(view_url(SUBDIR, slug, 'delete'),
+        rsp = self.client.post(view_url(SUBDIR, slug + DELETE_ACTION),
                                follow_redirects=True)
 
         self.assertEqual(rsp.status_code, 200)
         self.assertNotIn(slug, rsp.data)
 
-    def test_delete_report_get(self):
-        slug = SUBDIR_SLUGS[SUBDIR][0]
-
-        rsp = self.client.get(view_url(SUBDIR, slug, 'delete'))
-        self.assertEqual(rsp.status_code, 405)
-
     def test_delete_report_not_found(self):
         slug = 'foo'
-        rsp = self.client.post(view_url(SUBDIR, slug, 'delete'),
-                              follow_redirects=True)
-        
+        rsp = self.client.post(view_url(SUBDIR, slug + DELETE_ACTION),
+                               follow_redirects=True)
+         
         self.assertEqual(rsp.status_code, 404)
 
     def test_delete_reports(self):
@@ -154,7 +149,7 @@ class ViewTestCase(AppTestCase):
         self.assertEqual(rsp.status_code, 200)
         self.assertNotIn(slug, rsp.data)
 
-    def test_delete_reports_multi_redirect(self):
+    def test_delete_reports_redirect_multi(self):
         slugs = SUBDIR_SLUGS[SUBDIR]
 
         rsp = self.client.post(view_url(SUBDIR + DELETE_ACTION),
