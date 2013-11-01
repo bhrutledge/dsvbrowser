@@ -1,7 +1,3 @@
-import os
-import shutil
-import unittest
-
 from StringIO import StringIO
 from tab2html import create_app
 from tab2html.constants import *
@@ -62,6 +58,15 @@ class ViewTestCase(AppTestCase):
 
     def test_upload_file(self):
         slug = 'test'
+
+        rsp = self.client.post(view_url(self.subdir), 
+            data={'file': (StringIO('foo\nbar'), slug + REPORT_EXT)})
+
+        self.assertEqual(rsp.status_code, 302)
+        self.assertIn(view_url(self.subdir, slug), rsp.location)
+
+    def test_upload_file_redirect(self):
+        slug = 'test'
         contents = """
         report title
 
@@ -72,8 +77,6 @@ class ViewTestCase(AppTestCase):
         rsp = self.client.post(view_url(self.subdir), 
             data={'file': (StringIO(contents), slug + REPORT_EXT)},
             follow_redirects=True)
-
-        # TODO: Assert redirect url
 
         self.assertEqual(rsp.status_code, 200)
         self.assertIn('report title', rsp.data)
@@ -101,3 +104,32 @@ class ViewTestCase(AppTestCase):
             follow_redirects=True)
 
         self.assertEquals(rsp.status_code, 404)
+
+    def test_delete_report(self):
+        slug = self.subdir_slugs[self.subdir][0]
+
+        rsp = self.client.post(view_url(self.subdir, slug, 'delete'))
+        self.assertEqual(rsp.status_code, 302)
+        self.assertIn(view_url(self.subdir), rsp.location)
+
+    def test_delete_report_redirect(self):
+        slug = self.subdir_slugs[self.subdir][0]
+
+        rsp = self.client.post(view_url(self.subdir, slug, 'delete'),
+                               follow_redirects=True)
+
+        self.assertEqual(rsp.status_code, 200)
+        self.assertNotIn(slug, rsp.data)
+
+    def test_delete_report_get(self):
+        slug = self.subdir_slugs[self.subdir][0]
+
+        rsp = self.client.get(view_url(self.subdir, slug, 'delete'))
+        self.assertEqual(rsp.status_code, 405)
+
+    def test_delete_report_not_found(self):
+        slug = 'foo'
+        rsp = self.client.post(view_url(self.subdir, slug, 'delete'),
+                              follow_redirects=True)
+        
+        self.assertEqual(rsp.status_code, 404)

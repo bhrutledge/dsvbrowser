@@ -50,3 +50,13 @@ def show_report(subdir, slug):
         raise_errno(e)
     
     return render_template(subdir + TEMPLATE_EXT, subdir=subdir, report=report)
+
+@frontend.route('/<subdir>/<slug>/delete', methods=['POST'])
+def delete_report(subdir, slug):
+    report_dir = ReportDirectory(report_dir_path(subdir))
+    try:
+        report_dir.delete_report(slug)
+    except EnvironmentError as e:
+        raise_errno(e)
+    
+    return redirect(url_for('.list_reports', subdir=subdir))

@@ -46,6 +46,9 @@ class ReportDirectory(object):
     def __init__(self, path):
         self.path = path
 
+    def get_secure_path(self, filename):
+        return os.path.join(self.path, secure_filename(filename))
+
     def get_report_paths(self):
         return [ os.path.join(self.path, f) for f in os.listdir(self.path)
                  if f.endswith(REPORT_EXT) ]
@@ -62,11 +65,14 @@ class ReportDirectory(object):
         return reports
 
     def get_report(self, slug):
-        path = os.path.join(self.path, secure_filename(slug + REPORT_EXT))
+        path = self.get_secure_path(slug + REPORT_EXT)
         return Report.from_path(path)
 
+    def delete_report(self, slug):
+        path = self.get_secure_path(slug + REPORT_EXT)
+        os.remove(path)
+
     def upload_file(self, upload):
-        path = os.path.join(self.path, secure_filename(upload.filename))            
+        path = self.get_secure_path(upload.filename)
         upload.save(path)
         return Report(path)    
-
