@@ -15,28 +15,40 @@
 
     <script>
     $(function(){
-        $('#directory').tablesorter({
+        var $table = $('#directory');
+        $table.tablesorter({
             sortList : [[3,1]],
             widthFixed : true,
-            widgets : ['stickyHeaders', 'filter'],
+            widgets : ['zebra', 'stickyHeaders', 'filter'],
             headers: {
                 0: { sorter: 'checkbox' },
             },
             widgetOptions: {
+                filter_reset : "#clear-filters",
                 filter_functions: {
                     0: { 
-                        "Checked" : function(e, n, f, i) { return n === "checked"; },
-                        "Unchecked" : function(e, n, f, i) { return n === "unchecked"; }
+                        "Checked" : function(e, n, f, i) { return n === 'checked'; },
+                        "Unchecked" : function(e, n, f, i) { return n === 'unchecked'; }
                     },
                 },
             },
+        });
+
+        $('#check-visible').click(function() {
+            $table.find('tbody :checkbox').prop('checked', false);
+            $table.find('tbody tr:not(".filtered") :checkbox').prop('checked', true);
+            $table.trigger('update');
+        });
+
+        $('#check-none').click(function() {
+            $table.find('tbody :checkbox').prop('checked', false);
+            $table.trigger('update');
         });
     });
     </script>
 </head>
 
 <body>
-
     <p><a href="/">home</a> &gt; {{ subdir }}</p>
 
     {% if error %}
@@ -50,7 +62,7 @@
         </p>
     </form>
 
-    <p><a href="/static/help.html">Help</a></p>
+    {% include '_controls.html' %}
 
     <form action="?action=delete" method="post">
         <table id="directory">
@@ -73,6 +85,7 @@
             {% endfor %}
             </tbody>
         </table>
+
 
         <input type="submit" value="Delete Checked" />
     </form>
