@@ -12,38 +12,11 @@
     <script src="/static/js/jquery.tablesorter.widgets.min.js"></script>
     <script src="/static/js/jquery.tablesorter.widgets-filter-formatter.min.js"></script>
     <script src="/static/js/parsers/parser-input-select.js"></script>
-    
+    <script src="/static/js/script.js"></script>
+
     <script>
     $(function(){
-        var $table = $('#report');
-        $table.tablesorter({
-            sortList : [[1,0]],
-            widthFixed : true,
-            widgets : ['zebra', 'stickyHeaders', 'filter'],
-            headers: {
-                0: { sorter: 'checkbox' },
-            },
-            widgetOptions: {
-                filter_reset : "#clear-filters",
-                filter_functions: {
-                    0: { 
-                        "Checked" : function(e, n, f, i) { return n === 'checked'; },
-                        "Unchecked" : function(e, n, f, i) { return n === 'unchecked'; }
-                    },
-                },
-            },
-        });
-
-        $('#check-visible').click(function() {
-            $table.find('tbody :checkbox').prop('checked', false);
-            $table.find('tbody tr:not(".filtered") :checkbox').prop('checked', true);
-            $table.trigger('update');
-        });
-
-        $('#check-none').click(function() {
-            $table.find('tbody :checkbox').prop('checked', false);
-            $table.trigger('update');
-        });
+        $('#report').t2hTablesorter({sortList : [[1,0]]});
     });
     </script>
 </head>
