@@ -1,6 +1,4 @@
 import os
-import shutil
-import unittest
 
 from werkzeug.exceptions import NotFound
 
@@ -93,4 +91,16 @@ class ReportDirectoryTestCase(ModelTestCase):
         report = report_dir.get_report(self.slugs[0])
         self.assertEqual(report.path, self.paths[0])
 
+    def test_delete_report(self):
+        report_dir = ReportDirectory(self.subdir_path)
+        slug = self.slugs[0]
+
+        report_dir.delete_report(slug)
+        reports = report_dir.get_reports()
+
+        self.assertEqual(len(reports), len(self.slugs) - 1)
+        for report in reports:
+            self.assertNotEqual(slug, report.slug)
+
     # TODO: def test_upload_file(self):
+

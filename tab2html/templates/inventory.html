@@ -12,34 +12,21 @@
     <script src="/static/js/jquery.tablesorter.widgets.min.js"></script>
     <script src="/static/js/jquery.tablesorter.widgets-filter-formatter.min.js"></script>
     <script src="/static/js/parsers/parser-input-select.js"></script>
-    
+    <script src="/static/js/script.js"></script>
+
     <script>
     $(function(){
-        $('#report').tablesorter({
-            sortList : [[1,0]],
-            widthFixed : true,
-            widgets : ['zebra', 'stickyHeaders', 'filter'],
-            headers: {
-                0: { sorter: 'checkbox' },
-            },
-            widgetOptions: {
-                filter_functions: {
-                    0: { 
-                        "Checked" : function(e, n, f, i) { return n === "checked"; },
-                        "Unchecked" : function(e, n, f, i) { return n === "unchecked"; }
-                    },
-                },
-            },
-        });
+        $('#report').t2hTablesorter({sortList : [[1,0]]});
     });
     </script>
 </head>
+
 <body>
     <p><a href="/">home</a> &gt; <a href="/{{ subdir }}">{{ subdir }}</a> &gt; {{ report.slug }}</p>
 
     <h1>{{ report.title|e }}</h1>
 
-    <p><a href="/static/help.html">Help</a></p>
+    {% include '_controls.html' %}
 
     <table id="report">
         <thead>
