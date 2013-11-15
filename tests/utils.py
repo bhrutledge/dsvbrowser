@@ -4,6 +4,7 @@ import unittest
 
 from tab2html import create_app
 
+
 class AppTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -13,6 +14,6 @@ class AppTestCase(unittest.TestCase):
         shutil.copytree(self.test_instance_path, self.instance_path)
 
         self.app = create_app(self.instance_path)
-        
+
     def tearDown(self):
         shutil.rmtree(self.instance_path)

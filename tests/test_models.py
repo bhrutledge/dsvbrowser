@@ -1,7 +1,5 @@
 import os
 
-from werkzeug.exceptions import NotFound
-
 from tab2html.models import Report, ReportDirectory
 from tab2html.constants import *
 from .utils import AppTestCase
@@ -16,9 +14,9 @@ class ModelTestCase(AppTestCase):
         self.subdir_path = os.path.join(
             self.instance_path, REPORT_DIR, self.subdir)
         self.slugs = ['report_one', 'report_two']
-        self.filenames = [ s + REPORT_EXT for s in self.slugs ]
-        self.paths = [ os.path.join(self.subdir_path, f)
-                       for f in self.filenames ]
+        self.filenames = [s + REPORT_EXT for s in self.slugs]
+        self.paths = [os.path.join(self.subdir_path, f)
+                      for f in self.filenames]
 
 
 class ReportTestCase(ModelTestCase):
@@ -50,7 +48,7 @@ class ReportTestCase(ModelTestCase):
 
     def test_missing_content(self):
         report = Report(self.path)
-        
+
         report.content = []
         self.assertEqual(len(report.content), 0)
         self.assertEqual(report.title, '')
@@ -103,4 +101,3 @@ class ReportDirectoryTestCase(ModelTestCase):
             self.assertNotEqual(slug, report.slug)
 
     # TODO: def test_upload_file(self):
-

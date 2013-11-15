@@ -1,7 +1,7 @@
 import os
 
-from flask import Blueprint, render_template, request, redirect, url_for, abort
-from .models import Report, ReportDirectory
+from flask import Blueprint, render_template, request, redirect, url_for
+from .models import ReportDirectory
 from .constants import *
 from .utils import *
 
@@ -73,5 +73,5 @@ def show_report(subdir, slug):
         report = report_dir.get_report(slug)
     except EnvironmentError as e:
         raise_errno(e)
-    
+
     return render_template(subdir + TEMPLATE_EXT, subdir=subdir, report=report)

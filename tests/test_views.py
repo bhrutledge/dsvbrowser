@@ -1,13 +1,12 @@
 from StringIO import StringIO
 from werkzeug.datastructures import MultiDict
 
-from tab2html import create_app
 from tab2html.constants import *
 from .utils import AppTestCase
 
 
 SUBDIR = 'inventory'
-SUBDIR_SLUGS = {'inventory' : ['report_one', 'report_two']}
+SUBDIR_SLUGS = {'inventory': ['report_one', 'report_two']}
 UPLOAD_ACTION = '?action=upload'
 DELETE_ACTION = '?action=delete'
 
@@ -33,7 +32,7 @@ class ViewTestCase(AppTestCase):
             rsp = self.client.get(view_url(subdir))
             self.assertEqual(rsp.status_code, 200)
             self.assertIn(subdir, rsp.data)
-            
+
             for slug in SUBDIR_SLUGS[subdir]:
                 self.assertIn(view_url(subdir, slug), rsp.data)
 
@@ -64,9 +63,9 @@ class ViewTestCase(AppTestCase):
 
     def test_upload_file(self):
         slug = 'test'
+        data = {'file': (StringIO('foo\nbar'), slug + REPORT_EXT)}
 
-        rsp = self.client.post(view_url(SUBDIR + UPLOAD_ACTION), 
-            data={'file': (StringIO('foo\nbar'), slug + REPORT_EXT)})
+        rsp = self.client.post(view_url(SUBDIR + UPLOAD_ACTION), data=data)
 
         self.assertEqual(rsp.status_code, 302)
         self.assertIn(view_url(SUBDIR, slug), rsp.location)
@@ -80,9 +79,9 @@ class ViewTestCase(AppTestCase):
         data one\tdata two\t
         """
 
-        rsp = self.client.post(view_url(SUBDIR) + UPLOAD_ACTION, 
-            data={'file': (StringIO(contents), slug + REPORT_EXT)},
-            follow_redirects=True)
+        data = {'file': (StringIO(contents), slug + REPORT_EXT)}
+        rsp = self.client.post(view_url(SUBDIR) + UPLOAD_ACTION, data=data,
+                               follow_redirects=True)
 
         self.assertEqual(rsp.status_code, 200)
         self.assertIn('report title', rsp.data)
@@ -105,9 +104,9 @@ class ViewTestCase(AppTestCase):
             self.assertIn(SUBDIR, rsp.data)
 
     def test_upload_file_not_found(self):
-        rsp = self.client.post(view_url('foo') + UPLOAD_ACTION, 
-            data={'file': (StringIO('foo\nbar'), 'foo.txt')},
-            follow_redirects=True)
+        data = {'file': (StringIO('foo\nbar'), 'foo.txt')}
+        rsp = self.client.post(view_url('foo') + UPLOAD_ACTION, data=data,
+                               follow_redirects=True)
 
         self.assertEquals(rsp.status_code, 404)
 
@@ -131,7 +130,7 @@ class ViewTestCase(AppTestCase):
         slug = 'foo'
         rsp = self.client.post(view_url(SUBDIR, slug + DELETE_ACTION),
                                follow_redirects=True)
-         
+
         self.assertEqual(rsp.status_code, 404)
 
     def test_delete_reports(self):

@@ -4,7 +4,7 @@ from flask import Flask
 from .views import frontend
 
 
-def create_app(instance_path=None): 
+def create_app(instance_path=None):
     app = Flask(__name__, instance_relative_config=True,
                 instance_path=instance_path)
 
@@ -44,7 +44,7 @@ def configure_logging(app):
         mail_handler.setFormatter(logging.Formatter(
             '%(asctime)s %(levelname)s: %(message)s '
             '[in %(pathname)s:%(lineno)d]'))
-        
+
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
     except KeyError:

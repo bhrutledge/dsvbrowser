@@ -41,6 +41,7 @@ class Report(object):
         with codecs.open(path, 'U', encoding='utf-8') as content:
             return cls(path, content)
 
+
 class ReportDirectory(object):
 
     def __init__(self, path):
@@ -50,8 +51,8 @@ class ReportDirectory(object):
         return os.path.join(self.path, secure_filename(filename))
 
     def get_report_paths(self):
-        return [ os.path.join(self.path, f) for f in os.listdir(self.path)
-                 if f.endswith(REPORT_EXT) ]
+        return [os.path.join(self.path, f) for f in os.listdir(self.path)
+                if f.endswith(REPORT_EXT)]
 
     def get_reports(self):
         reports = []
@@ -75,4 +76,4 @@ class ReportDirectory(object):
     def upload_file(self, upload):
         path = self.get_secure_path(upload.filename)
         upload.save(path)
-        return Report(path)    
+        return Report(path)
