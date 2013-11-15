@@ -1,4 +1,5 @@
 import codecs
+import collections
 import datetime
 import os
 
@@ -7,31 +8,31 @@ from .constants import REPORT_EXT
 from .utils import nonblank_lines, unicode_csv_reader
 
 
-class Report(object):
-    # pylint: disable=too-few-public-methods
+Report = collections.namedtuple('Report',
+                                ['path', 'slug', 'date',
+                                 'title', 'head', 'body'])
 
-    def __init__(self, path):
-        self.path = path
-        self.slug = os.path.splitext(os.path.basename(path))[0]
-        self.date = datetime.datetime.fromtimestamp(os.path.getmtime(path))
 
-        self.title = ''
-        self.head = []
-        self.body = []
+def load_report(path):
+    slug = os.path.splitext(os.path.basename(path))[0]
+    date = datetime.datetime.fromtimestamp(os.path.getmtime(path))
 
-        self._read_path()
+    title = ''
+    head = []
+    body = []
 
-    def _read_path(self):
-        with codecs.open(self.path, 'U', encoding='utf-8') as content:
-            try:
-                line_iter = nonblank_lines(content)
-                self.title = line_iter.next()
+    with codecs.open(path, 'U', encoding='utf-8') as content:
+        try:
+            line_iter = nonblank_lines(content)
+            title = line_iter.next()
 
-                row_iter = unicode_csv_reader(line_iter, delimiter='\t')
-                self.head = row_iter.next()
-                self.body = list(row_iter)
-            except StopIteration:
-                pass
+            row_iter = unicode_csv_reader(line_iter, delimiter='\t')
+            head = row_iter.next()
+            body = list(row_iter)
+        except StopIteration:
+            pass
+
+    return Report(path, slug, date, title, head, body)
 
 
 class ReportDirectory(object):
@@ -50,7 +51,7 @@ class ReportDirectory(object):
         reports = []
         for path in self.get_report_paths():
             try:
-                reports.append(Report(path))
+                reports.append(load_report(path))
             except EnvironmentError:
                 # Ignore problematic paths
                 continue
@@ -59,7 +60,7 @@ class ReportDirectory(object):
 
     def get_report(self, slug):
         path = self.get_secure_path(slug + REPORT_EXT)
-        return Report(path)
+        return load_report(path)
 
     def delete_report(self, slug):
         path = self.get_secure_path(slug + REPORT_EXT)
@@ -68,4 +69,4 @@ class ReportDirectory(object):
     def upload_file(self, upload):
         path = self.get_secure_path(upload.filename)
         upload.save(path)
-        return Report(path)
+        return load_report(path)

@@ -2,7 +2,7 @@
 
 import os
 
-from tab2html.models import Report, ReportDirectory
+from tab2html.models import load_report, ReportDirectory
 from tab2html.constants import REPORT_DIR, REPORT_EXT
 from .utils import AppTestCase
 
@@ -36,7 +36,7 @@ class ReportTestCase(ModelTestCase):
         import datetime
 
         self.write_content(' title\n\none\ttwo\n1\t2\n3\t4\n\n')
-        report = Report(self.path)
+        report = load_report(self.path)
 
         self.assertEqual(report.path, self.path)
         self.assertEqual(report.slug, self.slug)
@@ -48,21 +48,21 @@ class ReportTestCase(ModelTestCase):
     def test_missing_content(self):
 
         self.write_content('')
-        report = Report(self.path)
+        report = load_report(self.path)
 
         self.assertEqual(report.title, '')
         self.assertEqual(report.head, [])
         self.assertEqual(report.body, [])
 
         self.write_content(' title\n\n')
-        report = Report(self.path)
+        report = load_report(self.path)
 
         self.assertEqual(report.title, 'title')
         self.assertEqual(report.head, [])
         self.assertEqual(report.body, [])
 
         self.write_content(' title\n\none\ttwo\n\n')
-        report = Report(self.path)
+        report = load_report(self.path)
 
         self.assertEqual(report.title, 'title')
         self.assertEqual(report.head, ['one', 'two'])
