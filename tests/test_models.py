@@ -26,6 +26,10 @@ class ReportTestCase(ModelTestCase):
         self.path = self.paths[0]
         self.slug = self.slugs[0]
 
+    def write_content(self, content):
+        with open(self.path, 'w') as report_file:
+            report_file.write(content)
+
     def test_path(self):
         import datetime
 
@@ -34,33 +38,34 @@ class ReportTestCase(ModelTestCase):
         self.assertEqual(report.path, self.path)
         self.assertEqual(report.slug, self.slug)
         self.assertIsInstance(report.date, datetime.datetime)
-        self.assertEqual(len(report.content), 0)
 
     def test_content(self):
-        content = [' title\n', '\n', 'one\ttwo\n', '1\t2\n', '3\t4\n', '\n']
-
-        report = Report(self.path, content)
-
-        self.assertEqual(report.content, content)
+        self.write_content(' title\n\none\ttwo\n1\t2\n3\t4\n\n')
+        report = Report(self.path)
+        
         self.assertEqual(report.title, 'title')
         self.assertEqual(report.head, ['one', 'two'])
         self.assertEqual(report.body, [['1', '2'], ['3', '4']])
 
     def test_missing_content(self):
+
+        self.write_content('')
         report = Report(self.path)
 
-        report.content = []
-        self.assertEqual(len(report.content), 0)
         self.assertEqual(report.title, '')
         self.assertEqual(report.head, [])
         self.assertEqual(report.body, [])
 
-        report.content = [' title\n', '\n']
+        self.write_content(' title\n\n')
+        report = Report(self.path)
+
         self.assertEqual(report.title, 'title')
         self.assertEqual(report.head, [])
         self.assertEqual(report.body, [])
 
-        report.content = [' title\n', '\n', 'one\ttwo\n', '\n']
+        self.write_content(' title\n\none\ttwo\n\n')
+        report = Report(self.path)
+
         self.assertEqual(report.title, 'title')
         self.assertEqual(report.head, ['one', 'two'])
         self.assertEqual(report.body, [])

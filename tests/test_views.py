@@ -72,14 +72,14 @@ class ViewTestCase(AppTestCase):
 
     def test_upload_file_redirect(self):
         slug = 'test'
-        contents = """
+        content = """
         report title
 
         column one\tcolumn two\t
         data one\tdata two\t
         """
 
-        data = {'file': (StringIO(contents), slug + REPORT_EXT)}
+        data = {'file': (StringIO(content), slug + REPORT_EXT)}
         rsp = self.client.post(view_url(SUBDIR) + UPLOAD_ACTION, data=data,
                                follow_redirects=True)
 

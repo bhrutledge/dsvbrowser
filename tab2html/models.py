@@ -8,8 +8,9 @@ from .utils import nonblank_lines, unicode_csv_reader
 
 
 class Report(object):
+    # pylint: disable=too-few-public-methods
 
-    def __init__(self, path, content=[]):
+    def __init__(self, path):
         self.path = path
         self.slug = os.path.splitext(os.path.basename(path))[0]
         self.date = datetime.datetime.fromtimestamp(os.path.getmtime(path))
@@ -17,29 +18,20 @@ class Report(object):
         self.title = ''
         self.head = []
         self.body = []
-        self.content = content
 
-    @property
-    def content(self):
-        return self._content
+        self._read_path()
 
-    @content.setter
-    def content(self, value):
-        self._content = value
-        try:
-            line_iter = nonblank_lines(value)
-            self.title = line_iter.next()
+    def _read_path(self):
+        with codecs.open(self.path, 'U', encoding='utf-8') as content:
+            try:
+                line_iter = nonblank_lines(content)
+                self.title = line_iter.next()
 
-            row_iter = unicode_csv_reader(line_iter, delimiter='\t')
-            self.head = row_iter.next()
-            self.body = list(row_iter)
-        except StopIteration:
-            pass
-
-    @classmethod
-    def from_path(cls, path):
-        with codecs.open(path, 'U', encoding='utf-8') as content:
-            return cls(path, content)
+                row_iter = unicode_csv_reader(line_iter, delimiter='\t')
+                self.head = row_iter.next()
+                self.body = list(row_iter)
+            except StopIteration:
+                pass
 
 
 class ReportDirectory(object):
@@ -58,8 +50,8 @@ class ReportDirectory(object):
         reports = []
         for path in self.get_report_paths():
             try:
-                reports.append(Report.from_path(path))
-            except:
+                reports.append(Report(path))
+            except EnvironmentError:
                 # Ignore problematic paths
                 continue
 
@@ -67,7 +59,7 @@ class ReportDirectory(object):
 
     def get_report(self, slug):
         path = self.get_secure_path(slug + REPORT_EXT)
-        return Report.from_path(path)
+        return Report(path)
 
     def delete_report(self, slug):
         path = self.get_secure_path(slug + REPORT_EXT)
