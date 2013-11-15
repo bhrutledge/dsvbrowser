@@ -6,7 +6,7 @@ from .constants import DIRS_TEMPLATE, REPORTS_TEMPLATE, TEMPLATE_EXT
 from .utils import raise_errno, report_dir_path, valid_upload
 
 
-frontend = Blueprint('frontend', __name__) # pylint: disable=invalid-name
+frontend = Blueprint('frontend', __name__)  # pylint: disable=invalid-name
 
 
 @frontend.route('/')

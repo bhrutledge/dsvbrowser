@@ -1,3 +1,5 @@
+# pylint: disable=too-many-public-methods,maybe-no-member,fixme
+
 from StringIO import StringIO
 from werkzeug.datastructures import MultiDict
 
@@ -148,7 +150,6 @@ class ViewTestCase(AppTestCase):
         self.assertEqual(rsp.status_code, 200)
         self.assertNotIn(slug, rsp.data)
 
-    def test_delete_reports_redirect_multi(self):
         slugs = SUBDIR_SLUGS[SUBDIR]
 
         rsp = self.client.post(view_url(SUBDIR + DELETE_ACTION),

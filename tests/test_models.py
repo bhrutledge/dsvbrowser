@@ -1,3 +1,5 @@
+# pylint: disable=too-many-public-methods,fixme
+
 import os
 
 from tab2html.models import Report, ReportDirectory
@@ -30,19 +32,15 @@ class ReportTestCase(ModelTestCase):
         with open(self.path, 'w') as report_file:
             report_file.write(content)
 
-    def test_path(self):
+    def test_init(self):
         import datetime
 
+        self.write_content(' title\n\none\ttwo\n1\t2\n3\t4\n\n')
         report = Report(self.path)
 
         self.assertEqual(report.path, self.path)
         self.assertEqual(report.slug, self.slug)
         self.assertIsInstance(report.date, datetime.datetime)
-
-    def test_content(self):
-        self.write_content(' title\n\none\ttwo\n1\t2\n3\t4\n\n')
-        report = Report(self.path)
-        
         self.assertEqual(report.title, 'title')
         self.assertEqual(report.head, ['one', 'two'])
         self.assertEqual(report.body, [['1', '2'], ['3', '4']])
@@ -72,6 +70,8 @@ class ReportTestCase(ModelTestCase):
 
 
 class ReportDirectoryTestCase(ModelTestCase):
+
+    # TODO: def test_upload_file(self):
 
     def test_get_report_paths(self):
         report_dir = ReportDirectory(self.subdir_path)
@@ -104,5 +104,3 @@ class ReportDirectoryTestCase(ModelTestCase):
         self.assertEqual(len(reports), len(self.slugs) - 1)
         for report in reports:
             self.assertNotEqual(slug, report.slug)
-
-    # TODO: def test_upload_file(self):

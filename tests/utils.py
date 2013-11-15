@@ -1,3 +1,5 @@
+# pylint: disable=too-many-public-methods,fixme
+
 import os
 import shutil
 import unittest
