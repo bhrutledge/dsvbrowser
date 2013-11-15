@@ -1,7 +1,7 @@
 from StringIO import StringIO
 from werkzeug.datastructures import MultiDict
 
-from tab2html.constants import *
+from tab2html.constants import REPORT_EXT
 from .utils import AppTestCase
 
 

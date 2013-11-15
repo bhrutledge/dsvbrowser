@@ -2,8 +2,8 @@ import os
 
 from flask import Blueprint, render_template, request, redirect, url_for
 from .models import ReportDirectory
-from .constants import *
-from .utils import *
+from .constants import DIRS_TEMPLATE, REPORTS_TEMPLATE, TEMPLATE_EXT
+from .utils import raise_errno, report_dir_path, valid_upload
 
 
 frontend = Blueprint('frontend', __name__)
@@ -17,7 +17,7 @@ def show_index():
 
 @frontend.route('/<subdir>', methods=['GET', 'POST'])
 def show_subdir(subdir):
-    error = None
+    error_msg = None
     report_dir = ReportDirectory(report_dir_path(subdir))
 
     # TODO: Break up into functions
@@ -29,28 +29,28 @@ def show_subdir(subdir):
             if valid_upload(upload):
                 try:
                     report = report_dir.upload_file(upload)
-                except EnvironmentError as e:
-                    raise_errno(e)
+                except EnvironmentError as err:
+                    raise_errno(err)
 
                 return redirect(
                     url_for('.show_report', subdir=subdir, slug=report.slug))
             else:
-                error = "Invalid file"
+                error_msg = "Invalid file"
         elif action == 'delete':
             for slug in request.form.getlist('slug'):
                 try:
                     report_dir.delete_report(slug)
-                except EnvironmentError as e:
+                except EnvironmentError:
                     pass
             return redirect(url_for('.show_subdir', subdir=subdir))
 
     try:
         reports = report_dir.get_reports()
-    except EnvironmentError as e:
-        raise_errno(e)
+    except EnvironmentError as err:
+        raise_errno(err)
 
     return render_template(REPORTS_TEMPLATE, subdir=subdir, reports=reports,
-                           error=error)
+                           error=error_msg)
 
 
 @frontend.route('/<subdir>/<slug>', methods=['GET', 'POST'])
@@ -64,14 +64,14 @@ def show_report(subdir, slug):
         if action == 'delete':
             try:
                 report_dir.delete_report(slug)
-            except EnvironmentError as e:
-                raise_errno(e)
+            except EnvironmentError as err:
+                raise_errno(err)
 
             return redirect(url_for('.show_subdir', subdir=subdir))
 
     try:
         report = report_dir.get_report(slug)
-    except EnvironmentError as e:
-        raise_errno(e)
+    except EnvironmentError as err:
+        raise_errno(err)
 
     return render_template(subdir + TEMPLATE_EXT, subdir=subdir, report=report)

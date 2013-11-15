@@ -1,7 +1,7 @@
 import os
 
 from tab2html.models import Report, ReportDirectory
-from tab2html.constants import *
+from tab2html.constants import REPORT_DIR, REPORT_EXT
 from .utils import AppTestCase
 
 

@@ -2,9 +2,9 @@ import codecs
 import datetime
 import os
 
-from werkzeug import secure_filename
-from .constants import *
-from .utils import *
+from werkzeug.utils import secure_filename
+from .constants import REPORT_EXT
+from .utils import nonblank_lines, unicode_csv_reader
 
 
 class Report(object):
@@ -56,9 +56,9 @@ class ReportDirectory(object):
 
     def get_reports(self):
         reports = []
-        for p in self.get_report_paths():
+        for path in self.get_report_paths():
             try:
-                reports.append(Report.from_path(p))
+                reports.append(Report.from_path(path))
             except:
                 # Ignore problematic paths
                 continue

@@ -4,13 +4,13 @@ import flask
 import os
 
 from werkzeug.exceptions import Forbidden, NotFound
-from .constants import *
+from .constants import REPORT_DIR, REPORT_EXT
 
 
-def raise_errno(e):
-    if e.errno in [errno.EPERM, errno.EACCES]:
+def raise_errno(err):
+    if err.errno in [errno.EPERM, errno.EACCES]:
         raise Forbidden
-    elif e.errno == errno.ENOENT:
+    elif err.errno == errno.ENOENT:
         raise NotFound
     else:
         raise
