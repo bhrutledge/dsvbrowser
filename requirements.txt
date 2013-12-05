@@ -1,0 +1,17 @@
+Fabric==1.8.0
+Flask==0.10.1
+Jinja2==2.7.1
+MarkupSafe==0.18
+Werkzeug==0.9.4
+astroid==1.0.1
+ecdsa==0.10
+flake8==2.1.0
+itsdangerous==0.23
+logilab-common==0.60.0
+mccabe==0.2.1
+paramiko==1.12.0
+pep8==1.4.6
+pycrypto==2.6.1
+pyflakes==0.7.3
+pylint==1.0.0
+wsgiref==0.1.2
