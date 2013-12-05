@@ -31,7 +31,7 @@
     <table id="report">
         <thead>
             <tr>
-                <th data-placeholder="All">Show</th>
+                <th class="show-col" data-placeholder="All">Show</th>
             {% for item in report.head %}
                 <th>{{ item|e }}</th>
             {% endfor %}
@@ -40,7 +40,7 @@
         <tbody>
         {% for row in report.body %}
             <tr>
-                <td><input type="checkbox" /></td>
+                <td class="show-col"><input type="checkbox" /></td>
             {% for item in row %}    
                 <td>{{ item|e }}</td>
             {% endfor %}

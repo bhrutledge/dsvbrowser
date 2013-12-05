@@ -1,7 +1,6 @@
 (function ($) {
     $.fn.t2hTablesorter = function(options) {
         var settings = $.extend(true, {
-            widthFixed : true,
             widgets : ['zebra', 'stickyHeaders', 'filter'],
             headers: {
                 0: { sorter: 'checkbox' },

@@ -28,7 +28,7 @@
     <p class="error"><strong>Error:</strong> {{ error }}</p>
     {% endif %}
     
-    <form action="?action=upload" method="post" enctype="multipart/form-data" />
+    <form id="upload" action="?action=upload" method="post" enctype="multipart/form-data" />
         <p>
             <input type="file" name="file" />
             <input type="submit" value="Upload" />
@@ -37,11 +37,11 @@
 
     {% include '_controls.html' %}
 
-    <form action="?action=delete" method="post">
+    <form id="delete" action="?action=delete" method="post">
         <table id="directory">
             <thead>
                 <tr>
-                    <th data-placeholder="All">Show</th>
+                    <th class="show-col" data-placeholder="All">Show</th>
                     <th>Name</th>
                     <th>Title</th>
                     <th>Date</th>
@@ -50,7 +50,7 @@
             <tbody>
             {% for report in reports %}
                 <tr>
-                    <td><input type="checkbox" name="slug" value="{{ report.slug }}"/></td>
+                    <td class="show-col"><input type="checkbox" name="slug" value="{{ report.slug }}"/></td>
                     <td><a href="/{{ subdir }}/{{ report.slug }}">{{ report.slug }}</a></td>
                     <td>{{ report.title }}</td>
                     <td>{{ report.date }}</td>
@@ -58,7 +58,6 @@
             {% endfor %}
             </tbody>
         </table>
-
 
         <input type="submit" value="Delete Checked" />
     </form>

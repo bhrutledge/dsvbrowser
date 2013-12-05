@@ -7,3 +7,20 @@ body {
     float: left;
     padding-right: 2em;
 }
+
+table {
+    clear: both;
+}
+
+.show {
+    width: 5em;
+}
+
+@media print {
+    input,
+    #controls,
+    .tablesorter-filter-row,
+    .show-col { 
+        display: none;
+    }
+}
