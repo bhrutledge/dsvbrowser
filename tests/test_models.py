@@ -2,8 +2,8 @@
 
 import os
 
-from tab2html.models import load_report, ReportDirectory
-from tab2html.constants import REPORT_DIR, REPORT_EXT
+from dsvbrowser.models import load_report, ReportDirectory
+from dsvbrowser.constants import REPORT_DIR, REPORT_EXT
 from .utils import AppTestCase
 
 

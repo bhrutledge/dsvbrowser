@@ -7,4 +7,4 @@ def test():
 
 def lint():
     f.local('flake8 .')
-    f.local('pylint --rcfile=.pylintrc tab2html tests fabfile run')
+    f.local('pylint --rcfile=.pylintrc dsvbrowser tests fabfile run')

@@ -4,7 +4,7 @@ import os
 import shutil
 import unittest
 
-from tab2html import create_app
+from dsvbrowser import create_app
 
 
 class AppTestCase(unittest.TestCase):
