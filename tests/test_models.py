@@ -12,7 +12,7 @@ class ModelTestCase(AppTestCase):
     def setUp(self):
         super(ModelTestCase, self).setUp()
 
-        self.subdir = 'inventory'
+        self.subdir = 'default'
         self.subdir_path = os.path.join(
             self.instance_path, REPORT_DIR, self.subdir)
         self.slugs = ['report_one', 'report_two']

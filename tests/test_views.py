@@ -7,8 +7,8 @@ from dsvbrowser.constants import REPORT_EXT
 from .utils import AppTestCase
 
 
-SUBDIR = 'inventory'
-SUBDIR_SLUGS = {'inventory': ['report_one', 'report_two']}
+SUBDIR = 'default'
+SUBDIR_SLUGS = {'default': ['report_one', 'report_two']}
 UPLOAD_ACTION = '?action=upload'
 DELETE_ACTION = '?action=delete'
 
