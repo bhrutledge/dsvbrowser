@@ -1,3 +1,3 @@
-# tab2html
+# dsvbrowser
 
-Flask app to convert tab-delimited reports to HTML tables
+Flask app to display delimiter-separated files as HTML tables.
