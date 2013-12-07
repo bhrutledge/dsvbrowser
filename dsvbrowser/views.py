@@ -2,7 +2,7 @@ import os
 
 from flask import Blueprint, render_template, request, redirect, url_for
 from .models import ReportDirectory
-from .constants import DIRS_TEMPLATE, REPORTS_TEMPLATE, TEMPLATE_EXT
+from .constants import INDEX_TEMPLATE, SUBDIR_TEMPLATE, TEMPLATE_EXT
 from .utils import raise_errno, report_dir_path, valid_upload
 
 
@@ -12,7 +12,7 @@ frontend = Blueprint('frontend', __name__)  # pylint: disable=invalid-name
 @frontend.route('/')
 def show_index():
     subdirs = os.walk(report_dir_path()).next()[1]
-    return render_template(DIRS_TEMPLATE, subdirs=subdirs)
+    return render_template(INDEX_TEMPLATE, subdirs=subdirs)
 
 
 @frontend.route('/<subdir>', methods=['GET', 'POST'])
@@ -49,7 +49,7 @@ def show_subdir(subdir):
     except EnvironmentError as err:
         raise_errno(err)
 
-    return render_template(REPORTS_TEMPLATE, subdir=subdir, reports=reports,
+    return render_template(SUBDIR_TEMPLATE, subdir=subdir, reports=reports,
                            error=error_msg)
 
 
