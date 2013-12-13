@@ -11,12 +11,16 @@ frontend = Blueprint('frontend', __name__)  # pylint: disable=invalid-name
 
 @frontend.route('/')
 def show_index():
+    """Show a list of subdirectories"""
+
     subdirs = os.walk(report_dir_path()).next()[1]
     return render_template(INDEX_TEMPLATE, subdirs=subdirs)
 
 
 @frontend.route('/<subdir>', methods=['GET', 'POST'])
 def show_subdir(subdir):
+    """Show all the reports in a subdirectory"""
+
     error_msg = None
     report_dir = ReportDirectory(report_dir_path(subdir))
 
@@ -55,6 +59,8 @@ def show_subdir(subdir):
 
 @frontend.route('/<subdir>/<slug>', methods=['GET', 'POST'])
 def show_report(subdir, slug):
+    """Show a single report"""
+
     report_dir = ReportDirectory(report_dir_path(subdir))
 
     # TODO: Break up into functions
@@ -75,3 +81,4 @@ def show_report(subdir, slug):
         raise_errno(err)
 
     return render_template(subdir + TEMPLATE_EXT, subdir=subdir, report=report)
+
