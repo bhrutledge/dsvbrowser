@@ -1,17 +1,7 @@
-.. dsvbrowser documentation master file, created by
-   sphinx-quickstart on Fri Dec 13 10:49:17 2013.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+dsvbrowser
+==========
 
-Welcome to dsvbrowser's documentation!
-======================================
-
-Contents:
-
-.. toctree::
-   :maxdepth: 2
-
-   readme
+Flask app to display delimiter-separated reports as HTML tables.
 
 
 Indices and tables
