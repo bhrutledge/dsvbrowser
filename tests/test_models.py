@@ -76,7 +76,7 @@ class ReportDirectoryTestCase(ModelTestCase):
     def test_get_report_paths(self):
         report_dir = ReportDirectory(self.subdir_path)
         paths = report_dir.get_report_paths()
-        self.assertEqual(paths, self.paths)
+        self.assertEqual(sorted(paths), sorted(self.paths))
 
     def test_get_reports(self):
         report_dir = ReportDirectory(self.subdir_path)
